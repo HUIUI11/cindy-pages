@@ -1,0 +1,2374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#efe6d6">
+<title>一本堂物语：进步</title>
+<style>
+:root{
+  --paper:#efe6d6; --paper2:#e5dac6; --ink:#2f2a24; --ink2:#6b5f4f; --ink3:#9a8d7a;
+  --line:#cdbfa6; --iron:#4a4b52; --clay:#8a6a50; --tea:#c9922f; --water:#4a90c2;
+  --gold:#b98a3c; --ok:#5f8a4a; --ash:#9b9b9e;
+  --wood:#a5804f; --wood2:#8a6136; --wood3:#6d4a28; --woodbg:#f3e7d2;
+  --shadow:0 2px 0 rgba(0,0,0,.08), 0 6px 18px rgba(60,45,25,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --paper:#221e19; --paper2:#2b2620; --ink:#ece2d2; --ink2:#b6a892; --ink3:#8b7f6c;
+         --line:#4a4237; --gold:#c8a05a; --wood:#8d6d45; --wood2:#6f4f2c; --wood3:#4a3320;
+         --woodbg:#332b22; --shadow:0 2px 0 rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.35); }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{
+  background:radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.55), transparent 60%),
+             repeating-linear-gradient(0deg, rgba(140,110,70,.035) 0 2px, transparent 2px 4px),
+             var(--paper);
+  color:var(--ink); font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC",system-ui,sans-serif;
+  font-size:14px; overflow:hidden; user-select:none;
+}
+.serif{font-family:"Songti SC","STSong","Source Han Serif SC","SimSun",serif}
+#app{display:flex;flex-direction:column;height:100dvh;height:100vh;max-width:640px;margin:0 auto;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+
+/* ---------- 顶栏 ---------- */
+#hud{display:flex;align-items:center;gap:8px;padding:8px 12px 6px;flex:0 0 auto}
+#brand{flex:1 1 auto;min-width:0}
+#brand h1{margin:0;font-size:17px;letter-spacing:2px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#brand p{margin:1px 0 0;font-size:10px;color:var(--ink3);letter-spacing:1px}
+.purse{display:flex;gap:5px;flex:0 0 auto}
+.purse b{display:inline-flex;align-items:center;gap:3px;
+  background:linear-gradient(#f6ecd9,#e9d8b8);border:1.5px solid var(--wood);border-radius:9px;
+  padding:3px 8px;font-size:11px;font-weight:700;box-shadow:0 2px 0 rgba(120,90,50,.4), 0 3px 6px rgba(60,40,20,.14)}
+@media (prefers-color-scheme: dark){.purse b{background:linear-gradient(#3d3327,#2f271e)}}
+.purse b i{font-style:normal;font-size:12px}
+
+/* ---------- 订单栏 ---------- */
+#orders{display:flex;gap:8px;padding:2px 12px 8px;overflow-x:auto;flex:0 0 auto;scrollbar-width:none}
+#clearedBar{display:none;font-size:12px;color:var(--ink2);line-height:1.5;padding:2px 14px 0}
+#clearedBar.on{display:block}
+#clearedBar b{color:var(--ok)}
+#orders::-webkit-scrollbar{display:none}
+.npc{flex:1 0 152px;max-width:215px;
+  background:linear-gradient(var(--woodbg),var(--paper2));
+  border:2px solid var(--wood);border-radius:13px;padding:8px;position:relative;transition:transform .12s,box-shadow .12s;
+  box-shadow:0 3px 0 var(--wood2), 0 7px 14px rgba(60,40,20,.20)}
+@media (prefers-color-scheme: dark){.npc{box-shadow:0 3px 0 var(--wood3), 0 7px 14px rgba(0,0,0,.4)}}
+.npc::before,.npc::after{content:"";position:absolute;top:-5px;width:7px;height:7px;border-radius:50%;
+  background:var(--wood2);box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.npc::before{left:11px} .npc::after{right:11px}
+.npc.locked{opacity:.55;filter:grayscale(.6)}
+.npc .row{display:flex;align-items:center;gap:6px}
+.npc .av{width:32px;height:32px;flex:0 0 auto;border-radius:50%;overflow:hidden;border:1px solid var(--line);background:var(--paper)}
+.npc .av svg{width:100%;height:100%;display:block}
+.npc .who{font-weight:700;font-size:13px;letter-spacing:1px;white-space:nowrap;flex:0 0 auto}
+.npc .cnt{margin-left:auto;font-size:9px;color:var(--ink3);white-space:nowrap;flex:0 0 auto}
+.reqs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;min-height:30px}
+.req{display:flex;align-items:center;gap:3px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:2px 6px 2px 3px;font-size:10px;opacity:.5;white-space:nowrap}
+.req.ok{opacity:1;border-color:var(--ok);background:rgba(95,138,74,.13)}
+.req svg{width:17px;height:17px;display:block;flex:0 0 auto}
+.req b{font-weight:700;font-size:10px;color:var(--ink3)}
+.req.ok b{color:var(--ok)}
+.req i{font-style:normal;font-size:10px;color:var(--gold)}
+.npc .give{margin-top:6px;width:100%;font:inherit;font-size:12px;font-weight:700;letter-spacing:1px;padding:6px;border-radius:9px;border:1px solid var(--gold);background:linear-gradient(#f3dcac,#e3c079);color:#4a3a16;cursor:pointer}
+.npc .give.dim{opacity:.5}
+.npc .give[data-ready="1"]{background:linear-gradient(#dcecd0,#b8d69a);border-color:var(--ok);color:#2d4522}
+.npc .give.reroll{border-color:var(--line);background:var(--paper);color:var(--ink2);font-weight:500;margin-top:4px}
+.npc .need{display:flex;align-items:center;gap:5px;margin-top:5px;font-size:10px;color:var(--gold)}
+.npc .need button{font:inherit;font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--gold);background:var(--paper);color:var(--gold);cursor:pointer}
+
+/* ---------- 棋盘：一只木托盘 ---------- */
+#boardWrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;padding:10px 10px 8px}
+#board{
+  width:min(100%,calc(100vh - 356px),560px);
+  width:min(100%,calc(100dvh - 356px),560px);
+  aspect-ratio:1/1;
+  display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:repeat(7,minmax(0,1fr));gap:5px;
+  border:3px solid var(--wood2); border-radius:16px; padding:8px; position:relative;
+  background:
+    repeating-linear-gradient(45deg, rgba(122,90,60,.075) 0 6px, rgba(122,90,60,.075) 6px 7px, transparent 7px 14px),
+    linear-gradient(var(--woodbg),var(--paper2));
+  box-shadow:0 5px 0 var(--wood3), 0 11px 22px rgba(60,40,20,.26), inset 0 2px 8px rgba(255,255,255,.45);
+}
+@media (prefers-color-scheme: dark){
+  #board{ box-shadow:0 5px 0 var(--wood3), 0 11px 22px rgba(0,0,0,.5), inset 0 2px 8px rgba(0,0,0,.35); }
+}
+
+/* ---------- 横屏布局：左边棋盘，右边信息栏（TapTap 商店按横屏发布） ---------- */
+@media (orientation:landscape) and (min-width:680px){
+  #app{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(340px,46%);
+    grid-template-rows:auto auto minmax(0,1fr) auto auto auto;
+    column-gap:10px; row-gap:0;
+    max-width:none; margin:0;
+    padding:env(safe-area-inset-top) 10px env(safe-area-inset-bottom);
+  }
+  #hud{grid-row:1;grid-column:2;padding:6px 4px 4px}
+  #clearedBar{grid-row:2;grid-column:2;padding:0 4px 2px}
+  #orders{grid-row:3;grid-column:2;padding:2px 4px 4px;align-items:flex-start}
+  #mascot{grid-row:4;grid-column:2;padding:2px 4px 2px}
+  #bench{grid-row:5;grid-column:2;padding:0 4px 4px}
+  #tools{grid-row:6;grid-column:1;padding:0 4px 6px}
+  #boardWrap{grid-row:1/6;grid-column:1;padding:6px}
+  #board{width:min(100%,calc(100vh - 34px),620px);width:min(100%,calc(100dvh - 34px),620px)}
+  /* 横屏下订单卡压缩：三张并排，不用横向滑 */
+  #orders{gap:6px}
+  .npc{flex:1 1 124px;min-width:0;max-width:none;padding:6px 5px}
+  .npc .row{flex-wrap:wrap;gap:4px}
+  .npc .av{width:26px;height:26px}
+  .npc .who{font-size:12px;letter-spacing:0}
+  .npc .cnt{margin-left:0;font-size:8px}
+  .reqs{margin-top:4px;min-height:0;gap:3px}
+  .req{font-size:9px;padding:1px 4px 1px 2px;gap:2px;max-width:100%}
+  .req svg{width:14px;height:14px}
+  .req span{white-space:normal;overflow-wrap:anywhere;min-width:0}
+  .npc .give{font-size:11px;padding:5px;margin-top:4px;letter-spacing:0}
+  .npc .give.reroll{margin-top:3px}
+  .npc .need{margin-top:4px;font-size:9px}
+}
+.cell{position:relative;border-radius:7px;background:rgba(255,255,255,.30);border:1px solid rgba(122,90,60,.14);
+  display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;overflow:visible;
+  box-shadow:inset 0 1px 3px rgba(90,60,30,.12), 0 1px 0 rgba(255,255,255,.35)}
+@media (prefers-color-scheme: dark){.cell{background:rgba(255,255,255,.05);box-shadow:inset 0 1px 3px rgba(0,0,0,.35)}}
+.cell.locked{background:rgba(90,70,40,.13)}
+.slot{width:100%;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:auto}
+.cell .icon{width:88%;height:88%;pointer-events:none;display:block}
+.cell .icon svg{width:100%;height:100%;display:block}
+.cell .item{width:90%;height:90%;pointer-events:auto;cursor:grab;transition:transform .12s;
+  filter:drop-shadow(0 2px 2px rgba(60,40,20,.30))}
+.cell .gen{width:86%;height:86%;cursor:pointer;pointer-events:auto;filter:drop-shadow(0 2px 2px rgba(60,40,20,.28))}
+.cell .obs{position:absolute;inset:2%;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 3px 3px rgba(60,40,20,.35))}
+.cell .obs svg{width:100%;height:100%;display:block}
+.cell.under{filter:brightness(.72)}
+.cell.sel{outline:2px solid var(--gold);outline-offset:-2px}
+.cell.caring{outline:2px solid #4f7a4a;outline-offset:-2px;
+  box-shadow:inset 0 0 0 999px rgba(79,122,74,.15);animation:careGlow 1.3s ease-in-out infinite}
+@keyframes careGlow{50%{box-shadow:inset 0 0 0 999px rgba(79,122,74,.04)}}
+/* 壶上动作标记：拖东西经过时亮出「烧 / 灌 / 擦」，长按养护时亮出「抹」 */
+.cell.act-burn{outline:2px solid #c9602c;outline-offset:-2px;box-shadow:inset 0 0 0 999px rgba(201,96,44,.17)}
+.cell.act-steep{outline:2px solid #b78a1e;outline-offset:-2px;box-shadow:inset 0 0 0 999px rgba(183,138,30,.17)}
+.cell.act-water{outline:2px solid #3d86a8;outline-offset:-2px;box-shadow:inset 0 0 0 999px rgba(61,134,168,.17)}
+.cell.act-wash{outline:2px solid #7d7a70;outline-offset:-2px;box-shadow:inset 0 0 0 999px rgba(125,122,112,.17)}
+.cell.act-burn::after,.cell.act-steep::after,.cell.act-water::after,.cell.act-wash::after,.cell.caring::after{
+  position:absolute;top:1px;left:1px;z-index:6;font-size:10px;font-weight:700;line-height:1;
+  color:#fff;padding:2px 4px;border-radius:999px;pointer-events:none;letter-spacing:.5px;
+  box-shadow:0 1px 2px rgba(40,28,12,.35)}
+.cell.act-burn::after{content:'烧';background:#c9602c}
+.cell.act-steep::after{content:'萃';background:#b78a1e}
+.cell.act-water::after{content:'灌';background:#3d86a8}
+.cell.act-wash::after{content:'擦';background:#7d7a70}
+.cell.caring::after{content:'抹';background:#4f7a4a}
+.cell.hint{outline:2px dashed var(--ok);outline-offset:-2px;animation:pulse 1s infinite}
+@keyframes pulse{50%{outline-color:transparent}}
+/* 障碍上的价格牌 */
+.cost{position:absolute;right:-2px;top:-2px;z-index:3;background:linear-gradient(#f3dcac,#e3c079);
+  border:1.5px solid var(--wood2);border-radius:999px;padding:0 4px;font-size:9px;font-weight:700;color:#4a3a16;
+  display:flex;align-items:center;gap:1px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.cost .lk{font-size:8px}
+/* 养护进度环 */
+.ring{position:absolute;inset:0;pointer-events:none}
+.ring circle{fill:none;stroke-linecap:round}
+.pop{animation:pop .3s ease-out}
+@keyframes pop{0%{transform:scale(.5)}to{transform:scale(1)}}
+.float{position:absolute;left:50%;top:28%;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:var(--gold);pointer-events:none;animation:fl 1s ease-out forwards;text-shadow:0 1px 2px rgba(255,255,255,.85);white-space:nowrap}
+@keyframes fl{0%{opacity:0;transform:translate(-50%,-30%)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-120%)}}
+#recycle{flex:0 0 auto;width:56px;min-height:38px;border:2px dashed var(--line);border-radius:10px;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:var(--ink3);text-align:center;line-height:1.25}
+#recycle small{font-size:9px;opacity:.75}
+#recycle.hot{border-color:var(--gold);color:var(--gold);background:rgba(185,138,60,.14)}
+#sell{flex:0 0 auto;width:60px;min-height:38px;border:2px solid var(--wood2);border-radius:10px;
+  background:linear-gradient(#f6dfae,#e3c079);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:#4a3a16;text-align:center;line-height:1.25;box-shadow:0 2px 0 var(--wood3);cursor:pointer}
+#sell small{font-size:9px;font-weight:400;opacity:.8}
+#sell.hot{transform:translateY(-2px);box-shadow:0 4px 0 var(--wood3)}
+
+/* ---------- 茶童引导 ---------- */
+#mascot{display:flex;gap:8px;align-items:flex-start;padding:2px 12px 4px;flex:0 0 auto}
+#mascot .boy{width:48px;height:48px;flex:0 0 auto;cursor:pointer;margin-top:1px;
+  filter:drop-shadow(0 3px 3px rgba(60,40,20,.32))}
+#mascot .bubble{flex:1 1 auto;background:var(--paper2);border:2px solid var(--wood);border-radius:13px;
+  padding:7px 11px;font-size:12px;line-height:1.6;position:relative;
+  box-shadow:0 3px 0 var(--wood2), 0 6px 12px rgba(60,40,20,.14);min-height:34px}
+#mascot .bubble::after{content:"";position:absolute;left:-7px;top:13px;width:12px;height:12px;
+  background:var(--paper2);border-left:2px solid var(--wood);border-bottom:2px solid var(--wood);transform:rotate(45deg)}
+#mascot .bubble b{color:var(--gold)}
+#mascot .bubble .k{color:var(--ink3);font-size:11px}
+#mascot .skip{float:right;font-size:10px;color:var(--ink3);text-decoration:underline;cursor:pointer;margin:0 0 0 8px;position:relative;z-index:2}
+#mascot .tutbar{display:block;height:3px;border-radius:2px;background:rgba(0,0,0,.13);margin-top:7px;overflow:hidden;clear:both}
+#mascot .tutbar i{display:block;height:100%;background:var(--gold);border-radius:2px;transition:width .3s}
+
+/* ---------- 杂物台（不再存物，只放待开的泥模与两个投放位） ---------- */
+#bench{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:0 12px 6px;flex:0 0 auto;min-height:40px}
+#benchChips{display:flex;gap:6px;flex:0 0 auto;align-items:center;overflow:hidden}
+.chip{display:flex;align-items:center;gap:3px;background:var(--paper2);border:1px solid var(--line);border-radius:999px;padding:3px 9px 3px 4px;font-size:11px;cursor:grab;white-space:nowrap}
+.chip svg{width:22px;height:22px;display:block}
+.chip .n{font-weight:700}
+
+/* ---------- 底部工具 ---------- */
+#tools{display:flex;gap:5px;padding:0 12px 10px;flex:0 0 auto}
+#tools button{flex:1 1 0;min-width:0;font:inherit;font-size:12px;padding:8px 2px;border-radius:10px;border:1px solid var(--line);background:var(--paper2);color:var(--ink);cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.05);white-space:nowrap}
+#tools button:active{transform:translateY(1px)}
+#tools button.off{opacity:.5}
+
+/* ---------- 拖拽幽灵 / 涂抹轨迹 ---------- */
+#ghost{position:fixed;width:56px;height:56px;pointer-events:none;z-index:999;display:none;transform:translate(-50%,-50%) scale(1.15);filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+#ghost svg{width:100%;height:100%}
+#trail{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:898;display:none}
+#careBar{position:fixed;z-index:899;display:none;background:rgba(38,30,20,.92);color:#f6eddc;font-size:11px;padding:3px 9px;border-radius:999px;white-space:nowrap;pointer-events:none;transform:translateX(-50%);letter-spacing:.3px}
+#careBar .cj{background:#4f7a4a;color:#f2f7ee;border-radius:999px;padding:1px 6px;margin-right:6px;font-weight:700;letter-spacing:.5px}
+
+/* ---------- 动态壁纸场景 ---------- */
+#scene{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .9s}
+#scene.on{opacity:1}
+#scene.sc-season{background:linear-gradient(180deg,#33465c 0%,#4c637a 42%,#7d8f9c 100%)}
+#scene.sc-ten{background:linear-gradient(180deg,#0e1728 0%,#1a2b45 48%,#28425e 100%)}
+#scene.sc-craft{background:linear-gradient(180deg,#33261a 0%,#453121 55%,#5a3f27 100%)}
+#scene .flake,#wallpaper .flake,.fx .flake{position:absolute;top:-14px;width:5px;height:5px;border-radius:50%;background:#fff;opacity:.9;animation:fall linear infinite}
+@keyframes fall{0%{transform:translateY(-14px) translateX(0);opacity:.9}
+  50%{transform:translateY(48vh) translateX(16px)}
+  100%{transform:translateY(104vh) translateX(-12px);opacity:.15}}
+#scene .moon,#wallpaper .moon,.fx .moon{position:absolute;right:13%;top:10%;width:62px;height:62px;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,#fdf6dc,#e8d9a8 58%,#cdb87e);
+  box-shadow:0 0 44px rgba(253,246,220,.5)}
+#scene .water,#wallpaper .water,.fx .water{position:absolute;left:0;right:0;bottom:0;height:36%;
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.13));border-top:1px solid rgba(255,255,255,.16)}
+#scene .water::after,#wallpaper .water::after,.fx .water::after{content:"";position:absolute;left:0;right:0;top:0;height:100%;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.13) 0 1px,transparent 1px 7px);
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 88%);mask-image:linear-gradient(180deg,#000,transparent 88%);
+  animation:shimmer 4.2s ease-in-out infinite alternate}
+@keyframes shimmer{from{transform:translateY(0)}to{transform:translateY(7px)}}
+#scene .moon::after,#wallpaper .moon::after,.fx .moon::after{content:"";position:absolute;left:50%;top:98%;width:54px;height:230px;
+  transform:translateX(-50%);background:linear-gradient(180deg,rgba(253,246,220,.26),transparent);filter:blur(2px);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 38%,#000 62%,transparent);mask-image:linear-gradient(90deg,transparent,#000 38%,#000 62%,transparent)}
+#scene .lamp,#wallpaper .lamp,.fx .lamp{position:absolute;left:10%;top:14%;width:86px;height:112px;border-radius:46% 46% 48% 48%;
+  background:radial-gradient(circle at 50% 38%,#ffd79a,#e08a3c 72%);opacity:.5;filter:blur(2px);animation:flick 3.6s ease-in-out infinite alternate}
+#scene .lamp2,#wallpaper .lamp2,.fx .lamp2{position:absolute;right:16%;top:22%;width:58px;height:76px;border-radius:46% 46% 48% 48%;
+  background:radial-gradient(circle at 50% 38%,#ffe0ae,#d8823a 72%);opacity:.42;filter:blur(2px);animation:flick 4.4s ease-in-out infinite alternate-reverse}
+@keyframes flick{from{opacity:.38}to{opacity:.62}}
+#scene .steam,#wallpaper .steam,.fx .steam{position:absolute;left:0;right:0;bottom:0;height:46%;
+  background:linear-gradient(180deg,transparent,rgba(255,240,215,.07));animation:steam 7s ease-in-out infinite alternate}
+@keyframes steam{from{transform:translateY(8px);opacity:.5}to{transform:translateY(-10px);opacity:.9}}
+.fx{position:absolute;inset:0;pointer-events:none}
+
+/* ---------- 全屏动态壁纸 ---------- */
+#wallpaper{position:fixed;inset:0;z-index:1200;display:none;overflow:hidden}
+#wallpaper.on{display:block}
+#wallpaper.sc-season{background:linear-gradient(180deg,#33465c 0%,#4c637a 42%,#7d8f9c 100%)}
+#wallpaper.sc-ten{background:linear-gradient(180deg,#0e1728 0%,#1a2b45 48%,#28425e 100%)}
+#wallpaper.sc-craft{background:linear-gradient(180deg,#33261a 0%,#453121 55%,#5a3f27 100%)}
+#wallpaper .close{position:absolute;right:14px;top:14px;width:38px;height:38px;border-radius:50%;
+  background:rgba(0,0,0,.42);color:#fff;border:0;font-size:19px;cursor:pointer;line-height:1}
+#wallpaper .wname{position:absolute;left:0;right:0;bottom:40px;text-align:center;color:#fff;
+  font-size:16px;letter-spacing:5px;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+#wallpaper .wsub{position:absolute;left:0;right:0;bottom:18px;text-align:center;color:rgba(255,255,255,.72);
+  font-size:11px;letter-spacing:2px}
+#wallpaper .flake,#wallpaper .moon,#wallpaper .water,#wallpaper .lamp,#wallpaper .lamp2,#wallpaper .steam{position:absolute}
+
+/* ---------- 泥模 / 纹样 ---------- */
+.chip.mold{background:linear-gradient(#e7d3b4,#d8bd93);border-color:var(--gold);animation:moldGlow 1.8s ease-in-out infinite}
+.chip.mold .mi{width:24px;height:24px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+.chip.mold i{font-style:normal;font-size:10px;color:var(--gold);font-weight:700}
+@keyframes moldGlow{0%,100%{box-shadow:0 0 0 0 rgba(185,138,60,.5)}50%{box-shadow:0 0 0 5px rgba(185,138,60,0)}}
+.reveal{position:relative;height:158px;display:flex;align-items:center;justify-content:center}
+.reveal .mold{width:92px;height:92px;transition:transform .45s ease-in, opacity .45s}
+.reveal .mold.crack{transform:scale(1.2) rotate(10deg);opacity:0}
+.reveal .pot{position:absolute;width:126px;height:126px;opacity:0;transform:scale(.55);
+  transition:opacity .45s ease-out, transform .45s cubic-bezier(.2,1.6,.4,1);filter:drop-shadow(0 6px 12px rgba(0,0,0,.35))}
+.reveal .pot.show{opacity:1;transform:scale(1)}
+.rvname{font-size:16px;font-weight:700;letter-spacing:2px;text-align:center;margin-top:2px}
+.rvline{font-size:12px;color:var(--ink2);text-align:center;margin-top:3px}
+.rvnew{display:inline-block;margin-top:8px;padding:3px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:3px;
+  background:linear-gradient(#f3dcac,#e3c079);border:1.5px solid var(--wood2);color:#4a3a16}
+.rvset{font-size:11px;color:var(--ink3);text-align:center;margin-top:8px}
+.rvunlock{margin-top:10px;text-align:center;font-size:12px;line-height:1.6;background:rgba(185,138,60,.13);
+  border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 10px}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.pslot{background:var(--paper2);border:1px solid var(--line);border-radius:9px;padding:5px 3px;text-align:center;position:relative}
+.pslot.lock{opacity:.42;filter:grayscale(1)}
+.pslot svg{width:100%;height:auto;display:block}
+.pslot .pn{font-size:9px;line-height:1.3;margin-top:2px}
+.pslot .pc{position:absolute;right:2px;top:1px;font-size:9px;font-weight:700;color:var(--gold)}
+.pslot.done{box-shadow:0 0 0 2px rgba(185,138,60,.45)}
+.pset{margin-top:12px}
+.pset .ph{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:2px}
+.pset .ph em{font-style:normal;font-size:10px;color:var(--ink3);font-weight:400;margin-left:auto}
+
+/* ---------- 图鉴页签 / 光标引导 ---------- */
+.cxtabs{display:flex;gap:5px;margin-bottom:10px}
+.cxtabs button{flex:1;font:inherit;font-size:12px;font-weight:700;letter-spacing:1px;padding:7px 2px;border-radius:9px;
+  border:1px solid var(--line);background:var(--paper2);color:var(--ink2);cursor:pointer}
+.cxtabs button.on{background:linear-gradient(#f3dcac,#e3c079);border-color:var(--wood2);color:#4a3a16}
+.rsec{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:1px;margin:11px 0 4px}
+.rrow{display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:5px 8px;border-radius:8px;
+  background:var(--paper2);border:1px solid var(--line);margin-bottom:4px;font-size:11px;line-height:1.5}
+.rrow.got{border-color:var(--ok);background:rgba(95,138,74,.10)}
+.rrow i{font-style:normal;color:var(--ink3);padding:0 1px}
+.rrow .ro{font-weight:700;color:var(--ink3)}
+.rrow.got .ro{color:var(--ok)}
+.rrow .rd{margin-left:auto;font-size:9px;color:var(--ink3);flex:0 0 auto}
+.npc .firsttag{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;
+  background:linear-gradient(#f3dcac,#e3c079);border:1px solid var(--wood2);color:#4a3a16;vertical-align:1px}
+#guide{position:fixed;z-index:940;pointer-events:none;transform:translate(-50%,-50%);width:0;height:0;
+  opacity:0;visibility:hidden;
+  transition:left .5s cubic-bezier(.22,.9,.28,1), top .5s cubic-bezier(.22,.9,.28,1), opacity .3s, visibility .3s}
+#guide.on{opacity:1;visibility:visible}
+#guide .ring{position:absolute;left:0;top:0;width:72px;height:72px;margin:-36px 0 0 -36px;border-radius:50%;
+  border:2px solid var(--gold);animation:gpulse 1.5s ease-out infinite}
+#guide .hand{position:absolute;left:0;top:0;width:38px;height:38px;margin:-8px 0 0 -15px;
+  animation:gbob 1.1s ease-in-out infinite;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+@keyframes gpulse{0%{transform:scale(.55);opacity:.95}100%{transform:scale(1.45);opacity:0}}
+@keyframes gbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+/* 拖动时跟着手指的物品名 */
+#dragLabel{position:fixed;z-index:1001;pointer-events:none;display:none;transform:translate(-50%,0);
+  background:rgba(38,30,20,.93);color:#f6eddc;font-size:11px;padding:3px 10px;border-radius:999px;white-space:nowrap;
+  box-shadow:0 3px 10px rgba(0,0,0,.35);letter-spacing:.5px}
+#dragLabel b{color:var(--gold);font-weight:600}
+
+/* ---------- 弹层 ---------- */
+#modal{position:fixed;inset:0;background:rgba(30,22,12,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:1000;backdrop-filter:blur(2px)}
+#modal.on{display:flex}
+.sheet{background:var(--paper);border:1px solid var(--line);border-radius:16px;max-width:420px;width:100%;max-height:82vh;overflow:auto;box-shadow:0 18px 50px rgba(0,0,0,.35);animation:rise .22s ease-out}
+/* 只动位移，不动 opacity：动画没跑起来时弹层也必须可见 */
+@keyframes rise{from{transform:translateY(16px)}to{transform:translateY(0)}}
+.sheet h2{margin:0;padding:14px 16px 8px;font-size:17px;letter-spacing:2px}
+.sheet .body{padding:0 16px 14px;font-size:13px;line-height:1.75}
+.sheet .foot{display:flex;gap:8px;padding:0 16px 16px}
+.sheet .foot button{flex:1;font:inherit;font-size:13px;font-weight:700;padding:10px;border-radius:10px;border:1px solid var(--gold);background:linear-gradient(#f3dcac,#e3c079);color:#4a3a16;cursor:pointer}
+.sheet .foot button.ghostbtn{border-color:var(--line);background:var(--paper2);color:var(--ink2);font-weight:500}
+.sheet hr{border:0;border-top:1px dashed var(--line);margin:12px 0}
+.talk{display:flex;gap:9px;align-items:flex-start}
+.talk .av{width:46px;height:46px;flex:0 0 auto;border-radius:50%;overflow:hidden;border:1px solid var(--line)}
+.talk .av svg{width:100%;height:100%;display:block}
+.talk .bal{flex:1 1 auto;background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:9px 11px;font-size:13px;line-height:1.7}
+.deliv{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px}
+.deliv .d{display:flex;align-items:center;gap:7px;background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:6px 10px 6px 6px;flex:1 1 160px}
+.deliv .d svg{width:30px;height:30px;display:block;flex:0 0 auto}
+.deliv .d .nm{font-weight:700;font-size:12px}
+.deliv .d .tx{font-size:11px;color:var(--ink2);line-height:1.5}
+.fact{background:rgba(185,138,60,.11);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 10px;font-size:12px;line-height:1.7;color:var(--ink2)}
+.fact b{color:var(--ink)}
+.praise{background:rgba(95,138,74,.13);border-left:3px solid var(--ok);border-radius:0 8px 8px 0;padding:8px 10px;font-size:12px;line-height:1.7}
+.rewards{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.rewards span{background:var(--paper2);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
+.rewards span.bonus{border-color:var(--ok);color:var(--ok)}
+.entry{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--line)}
+.entry:last-child{border-bottom:0}
+.entry svg{width:30px;height:30px;flex:0 0 auto}
+.entry .t{font-size:12px;line-height:1.6}
+.entry .t b{font-size:12.5px}
+.entry .t .sub{color:var(--ink3);font-size:11px}
+.empty{text-align:center;color:var(--ink3);font-size:12px;padding:22px 8px;line-height:1.9}
+.tip{display:flex;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:12px;line-height:1.7}
+.tip:last-child{border-bottom:0}
+.tip .n{color:var(--ink3);flex:0 0 auto;font-variant-numeric:tabular-nums}
+.garden{display:flex;align-items:center;gap:9px;margin:8px 0;padding:8px 10px;background:var(--paper2);border:1px solid var(--line);border-radius:12px}
+.garden svg{width:36px;height:36px;flex:0 0 auto}
+.garden .g1{flex:1 1 auto}
+.garden .g1 b{font-size:13px}
+.garden .g1 div{font-size:11px;color:var(--ink3);line-height:1.5}
+.garden button{font:inherit;font-size:11px;padding:5px 11px;border-radius:999px;border:1px solid var(--gold);background:linear-gradient(#f3dcac,#e3c079);color:#4a3a16;cursor:pointer;white-space:nowrap}
+.garden button:disabled{opacity:.45}
+.sect{font-weight:700;font-size:13px;letter-spacing:1px;margin:14px 0 4px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.sect:first-child{margin-top:0}
+
+/* ---------- 竖屏转屏提示 ---------- */
+#rotateTip{position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:1050;display:none;
+  align-items:center;gap:8px;width:max-content;max-width:calc(100vw - 16px);
+  background:rgba(38,30,20,.94);color:#f6eddc;
+  font-size:11.5px;padding:7px 10px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+#rotateTip .rtx{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rotateTip button{font:inherit;font-size:11px;padding:3px 9px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--gold);background:var(--gold);color:#4a3a16;flex:0 0 auto}
+@media (orientation:portrait) and (max-width:679px){
+  #rotateTip.show{display:flex}
+}
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:1100;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+#toast div{background:rgba(38,30,20,.93);color:#f6eddc;padding:8px 15px;border-radius:999px;font-size:12.5px;box-shadow:0 6px 18px rgba(0,0,0,.3);animation:tin .3s ease-out;max-width:88vw;text-align:center}
+@keyframes tin{from{opacity:0;transform:translateY(10px)}}
+</style>
+</head>
+<body>
+<div id="scene"></div>
+<div id="wallpaper"><button class="close" id="wpClose">×</button><div class="wname" id="wpName"></div><div class="wsub" id="wpSub"></div></div>
+<div id="app">
+  <header id="hud">
+    <div id="brand">
+      <h1 class="serif">一本堂物语：进步</h1>
+      <p>一壶一茶，慢慢来</p>
+    </div>
+    <div class="purse">
+      <b title="铜钱"><i>🪙</i><span id="cCoin">0</span></b>
+      <b title="钻石"><i>💎</i><span id="cDia">0</span></b>
+      <b title="锤子"><i>🔨</i><span id="cHam">0</span></b>
+      <b title="部件"><i>⚙️</i><span id="cPart">0</span></b>
+    </div>
+  </header>
+
+  <div id="clearedBar"></div>
+  <section id="orders"></section>
+
+  <main id="boardWrap"><div id="board"></div></main>
+
+  <section id="mascot">
+    <div class="boy" id="mascotBoy" title="点我看玩法"></div>
+    <div class="bubble" id="mascotSay"></div>
+  </section>
+
+  <section id="bench">
+    <div id="benchChips"></div>
+    <div id="recycle" title="回收筐：拖不要的东西进来清位置（不换钱）">回收筐<small>清位置</small></div>
+    <div id="sell" title="售壶处：把养好的铁壶拖过来卖钱">售壶处<small>换铜钱</small></div>
+  </section>
+
+  <footer id="tools">
+    <button id="btnCodex">图鉴</button>
+    <button id="btnGarden">茶园</button>
+    <button id="btnTips">科普</button>
+    <button id="btnSound">音效</button>
+    <button id="btnHelp">玩法</button>
+    <button id="btnReset">重开</button>
+  </footer>
+</div>
+
+<svg id="trail"></svg>
+<div id="guide"><span class="ring"></span><span class="hand"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M19 44c-4-3-6-8-6-14V20c0-2 1.5-3.5 3.5-3.5S20 18 20 20V10c0-2 1.5-3.5 3.5-3.5S27 8 27 10v9c0-2 1.5-3.5 3.5-3.5S34 17 34 19v2c0-2 1.5-3.5 3.5-3.5S41 18 41 20v10c0 8-5 14-13 14z" fill="#f6efe0" stroke="#4a4038" stroke-width="2" stroke-linejoin="round"/></svg></span></div>
+<div id="careBar"></div>
+<div id="ghost"></div>
+<div id="dragLabel"></div>
+<div id="toast"></div>
+<div id="rotateTip"><span class="rtx">横过来玩更好：把手机转一下</span><button id="rtClose">知道了</button></div>
+<div id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script>
+"use strict";
+/* =========================================================================
+   《一本堂物语：进步》 v2
+   新增：钥匙B 铁壶养护（涂抹手势） / 钥匙C 茶叶变体（茶种 × 时节）
+   ========================================================================= */
+
+const $ = s => document.querySelector(s);
+const SV = inner => '<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">'+inner+'</svg>';
+
+function toast(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  $('#toast').appendChild(t);
+  setTimeout(()=>{ t.style.transition='opacity .35s'; t.style.opacity='0'; setTimeout(()=>t.remove(),380); }, 1900);
+}
+
+/* ---------------- 颜色 ---------------- */
+function hsl(h,s,l){ return 'hsl('+((h%360)+360)%360+','+Math.max(0,Math.min(100,s))+'%,'+Math.max(0,Math.min(100,l))+'%)'; }
+
+/* ---------------- 茶种 × 时节 ---------------- */
+/* v1.2：三个产区（狮峰山/梅家坞/满觉陇）收敛成两种主茶 */
+const ORIGINS = {
+  lj: {id:'lj', name:'西湖龙井', scent:'清香', h:95,  s:44, l:42, teaH:78, teaS:46, teaL:38, gen:'龙井茶园', price:0,   note:'一芽一叶，清香甘冽，最耐泡'},
+  hm: {id:'hm', name:'九曲红梅', scent:'花果香', h:8, s:54, l:42, teaH:12, teaS:62, teaL:37, gen:'红梅茶园', price:220, note:'发酵成红茶，汤色红浓，香如梅花'}
+};
+const SEASONS = {
+  cw:{id:'cw',name:'春尾',tier:1,dl:-8,ds:-4,tdl:-9,desc:'谷雨后老叶，粗涩耐泡'},
+  yq:{id:'yq',name:'雨前',tier:2,dl:0, ds:0, tdl:0, desc:'雨前芽叶，味厚有骨'},
+  mq:{id:'mq',name:'明前',tier:3,dl:10,ds:-8,tdl:9, desc:'清明前单芽，产量少，味最鲜'}
+};
+const SEASON_ORDER=['cw','yq','mq'];
+
+/* ---------------- 图形 ---------------- */
+function rock(c1,c2,extra){
+  return '<path d="M7 35c-1-7 4-10 7-14 3-4 5-9 10-10 6-1 9 4 12 8 3 4 6 6 6 11 0 7-7 10-13 11H20c-7 0-12-3-13-6z" fill="'+c1+'"/>'+
+         '<path d="M19 13c4 3 6 7 4 12-2 6-6 9-12 8 1-5 1-9 3-13 1-3 3-5 5-7z" fill="'+c2+'" opacity=".7"/>'+(extra||'');
+}
+function teapot(c1,c2,acc,extra){
+  return '<path d="M38 27c6 0 9 4 9 8s-3 8-9 8" fill="none" stroke="'+c2+'" stroke-width="3.6" stroke-linecap="round"/>'+
+         '<path d="M12 28c-5 0-8.5 2.5-10 6 2.5-1.5 5.5-1.5 8 0-2 1.5-3.5 3.5-3.5 6.5 3.5-4.5 8.5-7 13-7z" fill="'+c2+'"/>'+
+         '<path d="M13 26c0-6 4.5-10 11-10s11 4 11 10v6c0 5.5-4.5 9.5-11 9.5s-11-4-11-9.5z" fill="'+c1+'"/>'+
+         '<path d="M16 19c-2.5 6-2.5 14 1 21" fill="none" stroke="'+acc+'" stroke-width="2.6" stroke-linecap="round" opacity=".9"/>'+
+         '<path d="M16 16c0-4.5 3.5-8 8-8s8 3.5 8 8z" fill="'+c2+'"/>'+
+         '<circle cx="24" cy="6.6" r="2.5" fill="'+acc+'"/>'+
+         '<path d="M16 41.5h16" stroke="'+c2+'" stroke-width="3.4" stroke-linecap="round"/>'+(extra||'');
+}
+/* 粗坯：没打磨的泥模铁胎，块面、接缝、短嘴 */
+function potRough(c1,c2,acc,extra){
+  return '<path d="M12 22c-4 5-4 13-1 18 3 5 10 7 15 6 6-1 11-5 11-11 0-4-2-9-4-13z" fill="'+c1+'"/>'+
+         '<path d="M10 25c-4 2-6 6-6 10 2-3 5-4 8-4z" fill="'+c2+'"/>'+
+         '<path d="M17 25l-2 7 3 4-1 7" fill="none" stroke="'+c2+'" stroke-width="1.9" stroke-linejoin="round"/>'+
+         '<path d="M29 27c3 1 4 3 3 5" fill="none" stroke="'+acc+'" stroke-width="2.6" stroke-linecap="round"/>'+
+         '<path d="M15 42h15" stroke="'+c2+'" stroke-width="3.2" stroke-linecap="round"/>'+(extra||'');
+}
+/* 直筒：高身筒体、直嘴长把 */
+function potTube(c1,c2,acc,extra){
+  return '<path d="M37 25c5 1 8 6 8 11s-3 10-8 11" fill="none" stroke="'+c2+'" stroke-width="3.4" stroke-linecap="round"/>'+
+         '<path d="M14 27c-6 0-9-3-10-7 4 2 7 2 11 3z" fill="'+c2+'"/>'+
+         '<path d="M15 16h18v20c0 4-4 6-9 6s-9-2-9-6z" fill="'+c1+'"/>'+
+         '<path d="M17 18v18" stroke="'+acc+'" stroke-width="2" opacity=".7" stroke-linecap="round"/>'+
+         '<path d="M14 15h20v3H14z" fill="'+c2+'"/>'+
+         '<path d="M21 11h6v4h-6z" fill="'+c2+'"/><circle cx="24" cy="9.4" r="2.3" fill="'+acc+'"/>'+
+         '<path d="M16 42h16" stroke="'+c2+'" stroke-width="3.2" stroke-linecap="round"/>'+(extra||'');
+}
+/* 矮胖：短身宽口、圆耳把 */
+function potSquat(c1,c2,acc,extra){
+  return '<path d="M37 25c7 0 11 4 11 8s-4 8-11 8" fill="none" stroke="'+c2+'" stroke-width="3.6" stroke-linecap="round"/>'+
+         '<path d="M14 30c-4 0-7 1-9 3 2-1 5-1 8 0z" fill="'+c2+'"/>'+
+         '<path d="M13 27c0-5 5-8 11-8s11 3 11 8v5c0 5-5 8-11 8s-11-3-11-8z" fill="'+c1+'"/>'+
+         '<path d="M15 26c3.5-3.5 14-3.5 18 0" fill="none" stroke="'+acc+'" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>'+
+         '<path d="M18 19c0-3.5 2.6-6 6-6s6 2.5 6 6z" fill="'+c2+'"/>'+
+         '<circle cx="24" cy="11" r="2.4" fill="'+acc+'"/>'+
+         '<path d="M16 40h16" stroke="'+c2+'" stroke-width="3.4" stroke-linecap="round"/>'+(extra||'');
+}
+const STEAM='<path d="M19 14c0-3 3-3 3-6M25 13c0-3 3-3 3-6M31 15c0-2 2-2 2-5" fill="none" stroke="#c9bda4" stroke-width="1.8" stroke-linecap="round" opacity=".85"/>';
+/* 茶器三种器型：春尾粗陶碗 / 雨前盖碗 / 明前高杯 */
+function cupBowl(l1,l2){
+  return '<path d="M8 22h32c0 9-7 15-16 15S8 31 8 22z" fill="#f0e6d2" stroke="#d9cdb4" stroke-width="1.4"/>'+
+         '<path d="M9.5 22h29c-1 3-4 5-8 6H17.5c-4-1-7-3-8-6z" fill="'+l1+'"/>'+
+         '<path d="M13 26c2 3 5 4 8 4" fill="none" stroke="'+l2+'" stroke-width="1.8" opacity=".45" stroke-linecap="round"/>'+
+         '<path d="M6 38h36" stroke="#c9bda4" stroke-width="3" stroke-linecap="round"/>';
+}
+function cupGaiwan(l1,l2){
+  return '<path d="M12 25h24v6c0 5-5 9-12 9s-12-4-12-9v-6z" fill="#f6efe1" stroke="#ddd2bd" stroke-width="1.5"/>'+
+         '<path d="M13 27h22v3c0 4-4 7-11 7s-11-3-11-7z" fill="'+l1+'"/>'+
+         '<path d="M11 21h26c0 2-2 3.2-4 3.2H15c-2 0-4-1.2-4-3.2z" fill="#eae0cc" stroke="#c9bda4" stroke-width="1.2"/>'+
+         '<circle cx="24" cy="18.6" r="1.9" fill="#c9bda4"/>'+
+         '<path d="M36 27c4 0 6 2 6 4s-2 4-6 4" fill="none" stroke="#e6dcc9" stroke-width="2.6"/>'+
+         '<path d="M16 30c2 2 4 3 6 3" fill="none" stroke="'+l2+'" stroke-width="1.7" opacity=".45" stroke-linecap="round"/>'+
+         '<path d="M10 40h28" stroke="#c9bda4" stroke-width="3" stroke-linecap="round"/>';
+}
+function cupTall(l1,l2,steam){
+  return '<path d="M14 16h20v20c0 4-4 6-10 6s-10-2-10-6z" fill="#f6efe1" stroke="#ddd2bd" stroke-width="1.5"/>'+
+         '<path d="M14 16h20v4H14z" fill="'+l1+'"/>'+
+         '<path d="M15 20h18v16c0 3-3 5-9 5s-9-2-9-5z" fill="'+l1+'"/>'+
+         '<path d="M17 23c0 6 1 11 3 15" fill="none" stroke="'+l2+'" stroke-width="2" opacity=".5" stroke-linecap="round"/>'+
+         '<path d="M34 18c4 0 6 2 6 4s-2 4-6 4" fill="none" stroke="#e6dcc9" stroke-width="2.6"/>'+
+         '<path d="M12 42h24" stroke="#c9bda4" stroke-width="3" stroke-linecap="round"/>'+(steam||'');
+}
+function leaf(c1,c2,extra){
+  return '<path d="M25 5c10 7 13 20 6 29-4 6-10 8-15 6-5-2-6-9-3-16C16 14 21 8 25 5z" fill="'+c1+'"/>'+
+         '<path d="M25 7v31" stroke="'+c2+'" stroke-width="2" stroke-linecap="round"/>'+(extra||'');
+}
+function drop(c1,c2){
+  return '<path d="M24 6c9 12 13 18 13 24a13 13 0 0 1-26 0c0-6 4-12 13-24z" fill="'+c1+'"/>'+
+         '<path d="M18 26c0 4 2 6 4 7" fill="none" stroke="'+c2+'" stroke-width="2.6" stroke-linecap="round" opacity=".8"/>';
+}
+/* 顶级香茗：两只特调拼出来的，器型也升级成带盖的高盏 */
+function cup(l1,l2,steam){
+  return '<path d="M11 18h26v10c0 7-6 12-13 12s-13-5-13-12z" fill="#f6efe1" stroke="#ddd2bd" stroke-width="1.6"/>'+
+         '<path d="M11 18h26v5H11z" fill="'+l1+'"/>'+
+         '<path d="M12.5 23h23v5c0 5-5 9-11.5 9s-11.5-4-11.5-9z" fill="'+l1+'"/>'+
+         '<path d="M16 25c0 6 3 10 8 10" fill="none" stroke="'+l2+'" stroke-width="2.2" stroke-linecap="round" opacity=".55"/>'+
+         '<path d="M9 14h30c0 2.4-2 4-4 4H13c-2 0-4-1.6-4-4z" fill="#e6d9bd" stroke="#c9bda4" stroke-width="1.3"/>'+
+         '<circle cx="24" cy="11.4" r="2.2" fill="#c9bda4"/>'+
+         '<path d="M37 20c4 0 6 2 6 4.5s-2 4.5-6 4.5" fill="none" stroke="#e6dcc9" stroke-width="2.6"/>'+
+         '<path d="M10 41h28" stroke="#c9bda4" stroke-width="3" stroke-linecap="round"/>'+(steam||'');
+}
+/* 茶种叶子：时节定结构（春尾厚叶 / 雨前一芽一叶 / 明前单芽），茶种定比例与标记 */
+const OSHAPE={lj:{sx:0.70,sy:1.00,ty:0}, hm:{sx:1.20,sy:0.94,ty:2}};
+function leafIcon(o,s){
+  const c=hsl(o.h,o.s,o.l+s.dl), cv=hsl(o.h,o.s-4,o.l+s.dl-14), vein=hsl(o.h,o.s-16,o.l+s.dl+20);
+  const os=OSHAPE[o.id]||OSHAPE.lj;
+  let body='';
+  if(s.id==='cw'){        // 春尾：一片厚老叶，带梗
+    body='<path d="M24 4c12 9 15 25 7 36-5 7-13 7-16 2-4-7-1-16 2-24 3-9 7-14z" fill="'+c+'"/>'+
+         '<path d="M24 6v33" stroke="'+vein+'" stroke-width="1.8" stroke-linecap="round"/>'+
+         '<path d="M24 13l-8 5M24 21l9 4M24 29l-8 5" stroke="'+vein+'" stroke-width="1.2" opacity=".6" stroke-linecap="round"/>';
+  } else if(s.id==='yq'){ // 雨前：一芽一叶
+    body='<path d="M31 4c7 10 8 23 3 33-4 7-10 7-13 3-3-6-1-15 1-23 1-8 4-12 9-13z" fill="'+c+'"/>'+
+         '<path d="M31 6v31" stroke="'+vein+'" stroke-width="1.7" stroke-linecap="round"/>'+
+         '<path d="M23 17c-6-4-11-3-14 1 5 4 10 5 15 3z" fill="'+cv+'"/>'+
+         '<path d="M23 17c-4-3-8-4-12-2" stroke="'+vein+'" stroke-width="1.2" fill="none" stroke-linecap="round"/>';
+  } else {                // 明前：单芽，尖细，带白毫
+    body='<path d="M24 3c6 11 7 25 3 35-3 7-8 7-10 3-2-7 0-17 1-25 1-7 3-12 6-13z" fill="'+c+'"/>'+
+         '<path d="M24 5v32" stroke="'+vein+'" stroke-width="1.5" stroke-linecap="round"/>'+
+         '<path d="M20 13l-4.5 3.5M20 21l4.5 3M20 29l-4.5 3.5" stroke="#f6f9e8" stroke-width="1.4" stroke-linecap="round" opacity=".9"/>';
+  }
+  const tf='translate(0 '+os.ty+') translate(24 0) scale('+os.sx+' '+os.sy+') translate(-24 0)';
+  let mark='';
+  if(o.id==='lj') mark='<path d="M14 20c-5-3-9-2-11 2 3 0 6 2 8 5z" fill="'+cv+'"/><path d="M13 21c-2-2-4-3-7-2" stroke="'+vein+'" stroke-width="1.1" fill="none"/>';
+  if(o.id==='hm') mark='<circle cx="39" cy="14" r="3.8" fill="#f8dbe6"/><circle cx="39" cy="14" r="1.4" fill="#e9b9ce"/><circle cx="39" cy="14" r="3.8" fill="none" stroke="#fbeef4" stroke-width=".9"/>';
+  return '<g transform="'+tf+'">'+body+'</g>'+mark;
+}
+function teaIcon(o,s){
+  const l=hsl(o.teaH,o.teaS,o.teaL+s.tdl), l2=hsl(o.teaH,o.teaS+8,o.teaL+s.tdl-14);
+  if(s.id==='cw') return cupBowl(l,l2);
+  if(s.id==='yq') return cupGaiwan(l,l2);
+  return cupTall(l,l2);
+}
+function brewIcon(o,s){
+  const l=hsl(o.teaH,o.teaS-4,o.teaL+s.tdl+4), l2=hsl(o.teaH,o.teaS+10,o.teaL+s.tdl-12);
+  if(s.id==='cw') return cupBowl(l,l2);
+  if(s.id==='yq') return cupGaiwan(l,l2);
+  return cupTall(l,l2,STEAM);
+}
+/* 生茶：茶叶下水后还没煮，碗里浮着叶，不能交单 */
+function rawTeaIcon(o,s){
+  const c=hsl(o.h,o.s,o.l+s.tdl), cv=hsl(o.h,o.s-10,o.l+s.tdl+18);
+  return '<path d="M10 24h28c0 8-6 13-14 13s-14-5-14-13z" fill="#e8e0cd" stroke="#cfc4ab" stroke-width="1.4"/>'+
+         '<path d="M13 24c4-4 14-4 18 0z" fill="'+c+'"/>'+
+         '<path d="M16 23c3-2 7-2 10 0" stroke="'+cv+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>'+
+         '<path d="M38 26c3 0 5 2 5 4s-2 4-5 4" fill="none" stroke="#ddd3bd" stroke-width="2.4"/>'+
+         '<path d="M8 39h32" stroke="#c9bda4" stroke-width="3" stroke-linecap="round"/>';
+}
+function treeIcon(h1,h2){
+  return '<path d="M21 41h6V25h-6z" fill="#7a5a3c"/><circle cx="24" cy="17" r="12" fill="'+h1+'"/><circle cx="13" cy="23" r="8" fill="'+h1+'"/><circle cx="35" cy="23" r="8" fill="'+h2+'"/><circle cx="24" cy="10" r="5" fill="'+h2+'"/>';
+}
+/* 颜色混合：让壶身随包浆一点点沁出茶色 */
+function hex2rgb(h){ h=h.replace('#',''); if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  const n=parseInt(h,16); return [(n>>16)&255,(n>>8)&255,n&255]; }
+function rgb2hex(r,g,b){
+  return '#'+[r,g,b].map(v=>('0'+Math.round(Math.max(0,Math.min(255,v))).toString(16)).slice(-2)).join(''); }
+function mixHex(a,b,t){ const A=hex2rgb(a),B=hex2rgb(b);
+  return rgb2hex(A[0]+(B[0]-A[0])*t, A[1]+(B[1]-A[1])*t, A[2]+(B[2]-A[2])*t); }
+
+/* ---------------- 物品表 ---------------- */
+const leafId=(o,s)=>'L_'+o+'_'+s;
+const rawId =(o,s)=>'R_'+o+'_'+s;
+const teaId =(o,s)=>'C_'+o+'_'+s;
+const brewId=(o,s)=>'B_'+o+'_'+s;
+
+const STATIC_ITEMS = {
+  '铁矿渣':  {icon:rock('#6f7075','#8b8c91'), tier:1, chain:'ore'},
+  '铁矿石':  {icon:rock('#7c6a58','#9c8a76'), tier:2, chain:'ore'},
+  '精铁矿':  {icon:rock('#5c6470','#8e99a6','<circle cx="30" cy="18" r="2.2" fill="#dbe6f2" opacity=".85"/><circle cx="18" cy="31" r="1.6" fill="#dbe6f2" opacity=".7"/>'), tier:3, chain:'ore'},
+  '湿泥':    {icon:'<path d="M10 34c0-6 6-8 10-8 3-6 11-6 14 0 5 0 8 3 8 8z" fill="#6b4d38"/><path d="M14 36c2 2 5 3 8 3" stroke="#8a6a50" stroke-width="2" stroke-linecap="round"/>', tier:1, chain:'clay'},
+  '泥膜':    {icon:'<rect x="8" y="24" width="32" height="12" rx="4" fill="#8a6a50"/><path d="M9 28h30" stroke="#a98866" stroke-width="2.5"/>', tier:2, chain:'clay'},
+  '坚固泥模':{icon:'<path d="M14 18h20v16a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z" fill="#a98866"/><ellipse cx="24" cy="18" rx="10" ry="4" fill="#c9ab86"/><path d="M18 26h12v10a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z" fill="#8a6a50" opacity=".3"/>', tier:3, chain:'clay'},
+  '草木灰':  {icon:'<path d="M9 38c0-5 5-7 9-7 2-6 12-6 15 0 4 0 7 3 7 7z" fill="#9b9b9e"/><path d="M16 38c3 2 6 3 10 3" stroke="#c4c4c6" stroke-width="2" stroke-linecap="round"/><circle cx="21" cy="24" r="2" fill="#b6b6b8"/><circle cx="30" cy="23" r="1.6" fill="#b6b6b8"/>', tier:1, chain:'ash'},
+  '生铁壶胚':{icon:potRough('#3f4046','#2c2d32','#6b6d75'), tier:1, chain:'pot', pot:true},
+  '素面铁壶':{icon:teapot('#4d4e56','#33343a','#8a8d96'), tier:2, chain:'pot', pot:true},
+  '防锈铁壶':{icon:potTube('#3b4048','#282c33','#9fb3c4','<circle cx="31" cy="33" r="1.5" fill="#b6c2cb" opacity=".65"/><circle cx="27" cy="37.5" r="1.1" fill="#b6c2cb" opacity=".55"/><circle cx="33.5" cy="29" r="1" fill="#b6c2cb" opacity=".45"/>'), tier:3, chain:'pot', pot:true},
+  '一本堂茶壶':{icon:potSquat('#6b4a2e','#452c1c','#e6b877','<path d="M14.5 27.5c3.5-3.5 15.5-3.5 19 0" fill="none" stroke="#e0a862" stroke-width="2.6" stroke-linecap="round" opacity=".9"/><circle cx="30" cy="33" r="1.6" fill="#f2cd93" opacity=".8"/><circle cx="26" cy="37" r="1.1" fill="#f2cd93" opacity=".6"/>'), tier:4, chain:'pot', pot:true},
+  '水滴':    {icon:drop('#8fc3e0','#d5ecf7'), tier:1, chain:'water'},
+  '净水':    {icon:drop('#4a90c2','#a8d4ee'), tier:2, chain:'water'},
+  '顶级香茗':{icon:cup('#d8b455','#b28c33',STEAM+'<path d="M14 16c2-2 4-2 6 0" stroke="#c9bda4" stroke-width="1.8" stroke-linecap="round" fill="none"/>'), tier:3, chain:'brew2'}
+};
+const POT_STYLE={
+  '生铁壶胚':{draw:potRough, clip:'M12 22c-4 5-4 13-1 18 3 5 10 7 15 6 6-1 11-5 11-11 0-4-2-9-4-13z', c1:'#3f4046',c2:'#2c2d32',acc:'#6b6d75',extra:''},
+  '素面铁壶':{draw:teapot,  clip:'M13 26c0-6 4.5-10 11-10s11 4 11 10v6c0 5.5-4.5 9.5-11 9.5s-11-4-11-9.5z', c1:'#4d4e56',c2:'#33343a',acc:'#8a8d96',extra:''},
+  '防锈铁壶':{draw:potTube,  clip:'M15 16h18v20c0 4-4 6-9 6s-9-2-9-6z', c1:'#3b4048',c2:'#282c33',acc:'#9fb3c4',extra:'<circle cx="31" cy="33" r="1.5" fill="#b6c2cb" opacity=".65"/><circle cx="27" cy="37.5" r="1.1" fill="#b6c2cb" opacity=".55"/><circle cx="33.5" cy="29" r="1" fill="#b6c2cb" opacity=".45"/>'},
+  '一本堂茶壶':{draw:potSquat, clip:'M13 27c0-5 5-8 11-8s11 3 11 8v5c0 5-5 8-11 8s-11-3-11-8z', c1:'#7d5530',c2:'#4d3018',acc:'#f0c98d',extra:'<path d="M14.5 27.5c3.5-3.5 15.5-3.5 19 0" fill="none" stroke="#e8b978" stroke-width="2.6" stroke-linecap="round" opacity=".95"/>'+
+    '<rect x="25.5" y="30" width="6" height="7" rx="1" fill="#b4553f" opacity=".92"/><path d="M27 32.5h3M27 34.5h3" stroke="#f4e6d2" stroke-width="1" opacity=".9"/>'+
+    '<circle cx="29" cy="38.5" r="1" fill="#f2cd93" opacity=".7"/>'}
+};
+/* ---------------- 泥模纹样（纯收集，不参与数值） ---------------- */
+const PATTERNS=[
+  {id:'willow', set:'season', name:'春·苏堤春晓', scene:'snow',
+   line:'堤上柳色，春风十里。',
+   svg:'<g stroke="#a8d167" stroke-width="1.5" fill="none" opacity=".95">'+
+       '<path d="M16 19c4 3 7 7 7 12"/><path d="M19 24c3 2 5 5 5 9"/></g>'+
+       '<g fill="#c3e08a"><ellipse cx="19" cy="22" rx="2.6" ry="1.3" transform="rotate(35 19 22)"/>'+
+       '<ellipse cx="23" cy="27" rx="2.6" ry="1.3" transform="rotate(20 23 27)"/>'+
+       '<ellipse cx="24" cy="31" rx="2.6" ry="1.3" transform="rotate(10 24 31)"/>'+
+       '<ellipse cx="16" cy="26" rx="2.6" ry="1.3" transform="rotate(55 16 26)"/></g>'},
+  {id:'lotus', set:'season', name:'夏·曲院荷风', scene:'snow',
+   line:'曲院风荷，一柄撑青。',
+   svg:'<circle cx="23" cy="30" r="8.5" fill="#4f9b52" opacity=".55"/>'+
+       '<g stroke="#d8ecc0" stroke-width=".8" opacity=".55">'+
+       '<path d="M23 21.5v17M14.5 30h17M17 24l12 12M29 24L17 36"/></g>'+
+       '<circle cx="29.5" cy="23" r="2.6" fill="#f2b9c9"/><circle cx="29.5" cy="23" r="1" fill="#fbe2ea"/>'},
+  {id:'osmanthus', set:'season', name:'秋·满陇桂雨', scene:'snow',
+   line:'满觉陇上，桂子纷如雨。',
+   svg:'<path d="M17 20c5 2 9 5 11 9" stroke="#8a6a3a" stroke-width="1.5" fill="none"/>'+
+       '<g fill="#e8c45c"><circle cx="20" cy="23" r="1.5"/><circle cx="24" cy="26" r="1.5"/>'+
+       '<circle cx="26" cy="30" r="1.5"/><circle cx="21" cy="28" r="1.3"/><circle cx="28" cy="34" r="1.3"/>'+
+       '<circle cx="23" cy="34" r="1.1"/><circle cx="30" cy="24" r="1.2"/><circle cx="18" cy="26" r="1.1"/></g>'},
+  {id:'snow', set:'season', name:'冬·断桥残雪', scene:'snow',
+   line:'断桥残雪，一壶暖手。',
+   svg:'<g fill="#f4f9ff" opacity=".95">'+
+       '<g transform="translate(21 26)"><path d="M0-3.4V3.4M-2.95-1.7L2.95 1.7M-2.95 1.7L2.95-1.7" stroke="#f4f9ff" stroke-width="1.2"/></g>'+
+       '<g transform="translate(28 32) scale(.8)"><path d="M0-3.4V3.4M-2.95-1.7L2.95 1.7M-2.95 1.7L2.95-1.7" stroke="#f4f9ff" stroke-width="1.4"/></g>'+
+       '<circle cx="17" cy="33" r="1.3"/><circle cx="24" cy="36" r="1"/><circle cx="31" cy="26" r="1.1"/></g>'},
+  {id:'moon', set:'ten', name:'三潭印月', scene:'moon',
+   line:'三塔影圆，月落三潭。',
+   svg:'<circle cx="24" cy="28" r="6.4" fill="none" stroke="#f0e2b0" stroke-width="1.3" opacity=".9"/>'+
+       '<circle cx="24" cy="28" r="3.2" fill="#f7ecc4" opacity=".85"/>'+
+       '<path d="M15 35c2 1.4 4 1.4 6 0M23 36c2 1.4 4 1.4 6 0" stroke="#f0e2b0" stroke-width="1.1" fill="none" opacity=".65"/>'},
+  {id:'glow', set:'ten', name:'雷峰夕照', scene:'moon',
+   line:'雷峰塔影，染在湖上。',
+   svg:'<path d="M22 36V27l3-3 3 3v9z" fill="#7a5a86" opacity=".8"/>'+
+       '<g stroke="#e89a5c" stroke-width="1.4" fill="none" opacity=".85">'+
+       '<path d="M14 24c3-1.4 5-1.4 8 0"/><path d="M15 29c3-1.4 5-1.4 8 0"/>'+
+       '<path d="M26 28c3-1.4 5-1.4 8 0"/><path d="M25 33c3-1.4 5-1.4 8 0"/></g>'},
+  {id:'peak', set:'ten', name:'双峰插云', scene:'moon',
+   line:'两峰相对，云出其上。',
+   svg:'<path d="M14 38l6-13 5 13z" fill="#6d7f92" opacity=".85"/>'+
+       '<path d="M23 38l5-9 5 9z" fill="#59697c" opacity=".85"/>'+
+       '<path d="M13 21c3-1.6 5-1.6 8 0M21 23c3-1.6 5-1.6 8 0" stroke="#e6eef5" stroke-width="1.5" fill="none" opacity=".8" stroke-linecap="round"/>'},
+  {id:'bell', set:'ten', name:'南屏晚钟', scene:'moon',
+   line:'晚钟一声，山谷俱静。',
+   svg:'<path d="M21 33c0-6 1.4-10 3-10s3 4 3 10z" fill="#c9a86a" opacity=".9"/>'+
+       '<path d="M20 34h8" stroke="#c9a86a" stroke-width="1.8" stroke-linecap="round"/>'+
+       '<g stroke="#e8d5a8" stroke-width="1.1" fill="none" opacity=".7">'+
+       '<path d="M15 30c-1.5-1.5-1.5-3 0-4.5"/><path d="M33 30c1.5-1.5 1.5-3 0-4.5"/>'+
+       '<path d="M12.5 34c-2.4-2.4-2.4-5 0-7.4"/><path d="M35.5 34c2.4-2.4 2.4-5 0-7.4"/></g>'},
+  {id:'pine', set:'craft', name:'松柏纹', scene:'room',
+   line:'松柏常青，岁寒不改。',
+   svg:'<path d="M17 36c2-6 6-11 12-13" stroke="#6b5a3a" stroke-width="1.6" fill="none"/>'+
+       '<g stroke="#3f7a52" stroke-width="1.2" opacity=".95">'+
+       '<path d="M24 27l-5-2M24 27l5-3M27 30l-5-1M27 30l5-2M29 32l-5-1M29 32l4-2"/></g>'+
+       '<g fill="#4f9b52" opacity=".8"><circle cx="19" cy="25" r="1.3"/><circle cx="29" cy="24" r="1.3"/><circle cx="32" cy="28" r="1.2"/></g>'},
+  {id:'cloud', set:'craft', name:'流云纹', scene:'room',
+   line:'云卷云舒，壶上自流。',
+   svg:'<g stroke="#d8c9a8" stroke-width="1.5" fill="none" opacity=".95" stroke-linecap="round">'+
+       '<path d="M15 27c2-3 5-3 7 0s5 3 7 0 4-2 5 0"/>'+
+       '<path d="M16 33c2-2.6 5-2.6 7 0s5 2.6 7 0"/></g>'},
+  {id:'leaf', set:'craft', name:'秋叶纹', scene:'room',
+   line:'一叶知秋，落在铁上。',
+   svg:'<g fill="#c8873c" opacity=".92">'+
+       '<path d="M22 22c2.6-2.6 6-2.6 8 0 1.6-1.6 3.4-1 3.4 1 0 3-3.4 6-6.6 6-2.6 0-4.8-2.4-4.8-4.4 0-1 .8-1.8 0-2.6z"/></g>'+
+       '<path d="M20 38c2.4-2.4 5-3.6 8-3.6" stroke="#9a6a2e" stroke-width="1.3" fill="none" opacity=".8"/>'},
+  {id:'wave', set:'craft', name:'海水江崖纹', scene:'room',
+   line:'海水江崖，镇得住波涛。',
+   svg:'<g stroke="#9db4c4" stroke-width="1.4" fill="none" opacity=".95" stroke-linecap="round">'+
+       '<path d="M14 33c2.6-2.6 5.2-2.6 7.8 0s5.2 2.6 7.8 0 4.4-1.6 5.4 0"/>'+
+       '<path d="M15 37c2.4-2.2 4.8-2.2 7.2 0s4.8 2.2 7.2 0"/></g>'+
+       '<path d="M18 24l4-4 4 4-2 6h-4z" fill="#8fa6b8" opacity=".55"/>'}
+];
+const SETS={
+  season:{name:'杭州四季', items:['willow','lotus','osmanthus','snow']},
+  ten:   {name:'西湖十景', items:['moon','glow','peak','bell']},
+  craft: {name:'铁壶錾纹', items:['pine','cloud','leaf','wave']}
+};
+const PAT_BY_ID={}; PATTERNS.forEach(p=>PAT_BY_ID[p.id]=p);
+let clipSeq=0;
+function patternPotSVG(pid,baseId){
+  const p=PAT_BY_ID[pid], bid=baseId||'一本堂茶壶', st=POT_STYLE[bid];
+  if(!p||!st) return '';
+  const c1=mixHex(st.c1,'#6b4a2e',0.55), c2=mixHex(st.c2,'#452c1c',0.55), acc=mixHex(st.acc,'#f0c98d',0.5);
+  const cid='pclip'+(clipSeq++);
+  const clip='<clipPath id="'+cid+'"><path d="'+st.clip+'"/></clipPath>'+
+              '<g clip-path="url(#'+cid+')">'+p.svg+'</g>';
+  return SV(st.draw(c1,c2,acc,st.extra+clip));
+}
+const MOLD_ICON='<path d="M14 20h20v15a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z" fill="#a98866" stroke="#7a5c48" stroke-width="1.2"/>'+
+  '<ellipse cx="24" cy="20" rx="10" ry="4" fill="#c9ab86" stroke="#7a5c48" stroke-width="1.2"/>'+
+  '<path d="M20 26c2.6 1.4 5.4 1.4 8 0M20 31c2.6 1.4 5.4 1.4 8 0" stroke="#7a5c48" stroke-width="1.2" fill="none" opacity=".55"/>'+
+  '<rect x="21" y="27.5" width="6" height="7" rx="1" fill="#b4553f" opacity=".92"/><path d="M22.6 30h2.8M22.6 32h2.8" stroke="#f2e3cf" stroke-width="1" opacity=".8"/>';
+
+function potIconHTML(cell){
+  const st=POT_STYLE[cell.id];
+  if(!st) return iconHTML(cell.id);
+  const t=Math.min(1,(cell.aged||0)/200);
+  const c1=mixHex(st.c1,'#6b4a2e',t*0.62);
+  const c2=mixHex(st.c2,'#452c1c',t*0.62);
+  const acc=mixHex(st.acc,'#f0c98d',t*0.55);
+  return SV(st.draw(c1,c2,acc,st.extra));
+}
+const ALL = Object.assign({}, STATIC_ITEMS);
+Object.keys(STATIC_ITEMS).forEach(k=>{ if(!STATIC_ITEMS[k].name) STATIC_ITEMS[k].name=k; });
+Object.keys(ORIGINS).forEach(oid=>{
+  const o=ORIGINS[oid];
+  SEASON_ORDER.forEach(sid=>{
+    const s=SEASONS[sid];
+    ALL[leafId(oid,sid)] = {name:o.name+s.name+'叶', icon:leafIcon(o,s), tier:s.tier, chain:'leaf', origin:oid, season:sid};
+    ALL[rawId(oid,sid)] = {name:o.name+s.name+'生茶', icon:rawTeaIcon(o,s), tier:0, chain:'raw', origin:oid, season:sid};
+    ALL[teaId(oid,sid)]  = {name:o.name+s.name+'茶', icon:teaIcon(o,s),  tier:s.tier, chain:'tea',  origin:oid, season:sid};
+    ALL[brewId(oid,sid)] = {name:o.name+s.name+'特调', icon:brewIcon(o,s), tier:2, chain:'brew', origin:oid, season:sid};
+  });
+});
+
+/* ---------------- 生成器 ---------------- */
+function firstOrigin(){ return Object.keys(ORIGINS).find(k=>state.gardens[k]) || 'lj'; }
+const GENS = {
+  '龙井茶园':{out:()=>leafId('lj','cw'), icon:treeIcon('#4e7a4a','#3f6d40')},
+  '红梅茶园':{out:()=>leafId('hm','cw'),icon:treeIcon('#6fa858','#4d7d3f')},
+  '铁矿堆':{out:()=>'铁矿渣', icon:'<path d="M6 37c-1-6 3-9 6-12 2-3 4-7 8-8 5-1 8 3 10 7 2 3 5 5 5 9 0 6-6 8-11 9H18c-7 0-11-3-12-5z" fill="#6f7075"/><path d="M27 31c-1-4 2-7 5-8 3-1 6 1 7 4 1 3 3 4 3 7 0 4-4 6-8 6h-5c-3 0-3-5-2-9z" fill="#8b8c91"/><path d="M31 13c4 3 8 7 9 11" stroke="#a5763f" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M38 22c3-4 7-5 8-3 1 2-2 7-6 9z" fill="#b9bec4"/>'},
+  '泥料坑':{out:()=>'湿泥', icon:'<ellipse cx="23" cy="33" rx="17" ry="9" fill="#5a4636"/><ellipse cx="23" cy="31" rx="13" ry="6" fill="#6b4d38"/><path d="M14 31c3-2 7-2 10 0" stroke="#8a6a50" stroke-width="2" fill="none"/><path d="M33 5l8 8-4 4-8-8z" fill="#b3b8bd"/><path d="M29 9l-8 8" stroke="#8a6b45" stroke-width="4" stroke-linecap="round"/>'},
+  '水缸':  {out:()=>'水滴', icon:'<path d="M14 13h20c0 4 4 6 4 12 0 9-6 14-14 14S10 34 10 25c0-6 4-8 4-12z" fill="#8d7b62"/><ellipse cx="24" cy="13" rx="10" ry="3.4" fill="#b3a289"/><ellipse cx="24" cy="19" rx="7.5" ry="2.6" fill="#5fa8d4"/><path d="M37 20l6 12" stroke="#8a6b45" stroke-width="3" stroke-linecap="round"/><circle cx="43" cy="34" r="3.4" fill="#9aa0a6"/>'},
+  '铁砧':  {out:()=>'精铁矿', icon:'<path d="M6 20h30c0 6-4 9-9 9h-2l4 6H16l4-6h-2c-6 0-12-3-12-9z" fill="#4a4b52"/><path d="M6 20h8l-2 9H6z" fill="#5d5f67"/><rect x="17" y="34" width="14" height="6" rx="2" fill="#383940"/><circle cx="30" cy="14" r="2" fill="#9fb3c4"/>'},
+  '陶窑':  {out:()=>'坚固泥模', icon:'<path d="M7 39c0-13 7-21 17-21s17 8 17 21z" fill="#8a6a50"/><path d="M18 39c0-6 2-9 6-9s6 3 6 9z" fill="#d8813a"/><path d="M21 39c0-4 1-6 3-6s3 2 3 6z" fill="#f2c14e"/><path d="M12 30c3 2 5 5 6 8" stroke="#a98866" stroke-width="2" fill="none" stroke-linecap="round"/>'},
+  '炒茶灶':{out:()=>leafId(firstOrigin(),'mq'), icon:'<rect x="7" y="31" width="34" height="8" rx="2" fill="#6b5a46"/><path d="M11 31c0-7 6-11 13-11s13 4 13 11z" fill="#5a5f66"/><path d="M23 27c0-3 2-5 2-8 2 3 4 5 4 8 0 3-3 5-6 5z" fill="#e08a3a"/><path d="M24 27c0-2 1-3 1-5 1 2 2 3 2 5s-1 3-3 3z" fill="#f2c14e"/>'},
+  '水车':  {out:()=>'净水', icon:'<circle cx="24" cy="24" r="16" fill="none" stroke="#7a5a3c" stroke-width="3"/><path d="M24 8v32M8 24h32M13 13l22 22M35 13L13 35" stroke="#7a5a3c" stroke-width="2.2"/><path d="M18 12h12v5H18z" fill="#4a90c2"/><path d="M6 34c3 2 6 3 10 3" stroke="#5fa8d4" stroke-width="2.4" fill="none" stroke-linecap="round"/>'},
+  '草木灰炉':{out:()=>'草木灰', icon:
+    '<rect x="21" y="8" width="7" height="16" rx="1" fill="#b3aca1" stroke="#7d766b" stroke-width="1.3"/>'+
+    '<rect x="18.5" y="5" width="12" height="4" rx="1.6" fill="#c7c0b4" stroke="#7d766b" stroke-width="1.1"/>'+
+    '<path d="M21 4c1.6-1.6 3.2-1.2 3.6-3 .5 1.8 2 1.4 3.6 3" fill="none" stroke="#c9c3b8" stroke-width="2" stroke-linecap="round" opacity=".75"/>'+
+    '<path d="M28.4 2.6c1.2-1.2 2.4-.8 2.8-2.4 .4 1.6 1.6 1.2 2.8 2.4" fill="none" stroke="#c9c3b8" stroke-width="1.6" stroke-linecap="round" opacity=".5"/>'+
+    '<rect x="7" y="24" width="34" height="17" rx="3" fill="#d6d0c5" stroke="#7d766b" stroke-width="1.4"/>'+
+    '<path d="M8.4 30h31.2M8.4 35.2h31.2" stroke="#b0a99e" stroke-width="1" fill="none"/>'+
+    '<path d="M14 40.4v-7.2a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7.4z" fill="#5f5951"/>'+
+    '<path d="M17 40.2c0-4.2 3-6.8 7-6.8s7 2.6 7 6.8z" fill="#ded9ce"/>'+
+    '<path d="M20.4 40.2c0-2.2 1.6-3.6 3.6-3.6s3.6 1.4 3.6 3.6z" fill="#e8a15a"/>'+
+    '<path d="M10 41h28" stroke="#6d5a3a" stroke-width="3.2" stroke-linecap="round"/>'}
+};
+const OBS = {
+  crate:'<path d="M7 17 L24 8 L41 17 L24 26 Z" fill="#ab7d45"/>'+
+        '<path d="M7 17 L24 26 L24 44 L7 35 Z" fill="#8a6136"/>'+
+        '<path d="M24 26 L41 17 L41 35 L24 44 Z" fill="#63421f"/>'+
+        '<path d="M7 17 L24 26 L41 17" stroke="#4e3317" stroke-width="1.3" fill="none" opacity=".55"/>'+
+        '<path d="M15 21.5 L15 40 M33 21.5 L33 40" stroke="#4e3317" stroke-width="1.3" opacity=".3"/>',
+  weed:'<ellipse cx="24" cy="40" rx="15" ry="4.6" fill="#6b5233" opacity=".5"/>'+
+       '<path d="M11 40c-1-11 1-19 4-25 2 5 3 11 2 15 3-8 6-12 9-14 0 7-1 13-3 18 3-5 6-8 9-9-1 7-4 12-8 15z" fill="#5f8a4a"/>'+
+       '<path d="M17 40c0-8 1-14 3-18 1 4 1 8 1 11 2-5 4-8 6-9 0 5-1 9-2 13z" fill="#78a35e" opacity=".9"/>'+
+       '<path d="M7 40h34" stroke="#8a7a5a" stroke-width="2.6" stroke-linecap="round"/>'
+};
+const FACES = {
+  fan: SV('<circle cx="24" cy="24" r="23" fill="#e9dcc3"/><path d="M15 31c0-6 4-11 9-11s9 5 9 11v3c0 5-4 9-9 9s-9-4-9-9z" fill="#f0d9bd"/><path d="M11 23c1-8 7-13 15-12-5 3-8 7-8 13z" fill="#f7f7f2"/><circle cx="20" cy="29" r="1.6" fill="#5a4a38"/><circle cx="28" cy="29" r="1.6" fill="#5a4a38"/><path d="M33 19c5 1 9 4 10 9-4-3-8-3-13-2z" fill="#d8c39a"/><path d="M31 21l4 8" stroke="#a5763f" stroke-width="1.6"/>'),
+  scholar: SV('<circle cx="24" cy="24" r="23" fill="#dfe6e8"/><path d="M15 29c0-5 4-9 9-9s9 4 9 9v4c0 4-4 8-9 8s-9-4-9-8z" fill="#f2ddc0"/><path d="M11 17h26l-5-6H16z" fill="#46525d"/><path d="M20 12h8v5h-8z" fill="#46525d"/><circle cx="20" cy="28" r="1.5" fill="#4a4038"/><circle cx="28" cy="28" r="1.5" fill="#4a4038"/><path d="M14 35c3 3 7 5 10 5s7-2 10-5" fill="none" stroke="#7a8a95" stroke-width="2"/>'),
+  master: SV('<circle cx="24" cy="24" r="23" fill="#e3d6c6"/><path d="M15 28c0-5 4-9 9-9s9 4 9 9v4c0 4-4 8-9 8s-9-4-9-8z" fill="#f0d9bd"/><path d="M19 30c0 7 2 11 5 11s5-4 5-11z" fill="#eeeeec"/><circle cx="20" cy="27" r="1.5" fill="#4a4038"/><circle cx="28" cy="27" r="1.5" fill="#4a4038"/><circle cx="24" cy="10" r="4.2" fill="#f7f7f2"/><path d="M20 10h8" stroke="#c9bda4" stroke-width="2"/>')
+};
+
+/* ---------------- 静态配方（键名统一排序生成，避免手写顺序出错） ---------------- */
+const RECIPE_PAIRS=[
+  [['铁矿渣','铁矿渣'],'铁矿石'],
+  [['铁矿石','铁矿石'],'精铁矿'],
+  [['湿泥','湿泥'],'泥膜'],
+  [['泥膜','泥膜'],'坚固泥模'],
+  [['水滴','水滴'],'净水'],
+  [['精铁矿','坚固泥模'],'生铁壶胚'],
+  [['生铁壶胚','生铁壶胚'],'素面铁壶']
+];
+const STATIC_RECIPE={};
+RECIPE_PAIRS.forEach(r=>{ STATIC_RECIPE[r[0].slice().sort().join('|')]=r[1]; });
+/* 变体配方 */
+/* 壶的档位：生铁壶胚 1 / 素面铁壶 2 / 防锈铁壶 3 / 一本堂茶壶 4 */
+const POT_TIER={'生铁壶胚':1,'素面铁壶':2,'防锈铁壶':3,'一本堂茶壶':4};
+function potTier(id){ return POT_TIER[id]||0; }
+function mergeResult(a,b){
+  const A=ALL[a], B=ALL[b];
+  if(!A||!B) return null;
+  const aWater=(a==='净水'), bWater=(b==='净水');
+  const aCanBrew=potTier(a)>=2, bCanBrew=potTier(b)>=2;      // 素面及以上才烧得了茶
+  const aGoodPot=potTier(a)>=3, bGoodPot=potTier(b)>=3;      // 防锈及以上才配得上特调
+  if(A.chain==='leaf'&&B.chain==='leaf'){
+    if(A.origin!==B.origin) return {err:'不同茶种不能混'};
+    const i=SEASON_ORDER.indexOf(A.season);
+    if(i>=SEASON_ORDER.length-1) return {err:'已是明前，攒着卖吧'};
+    return {id:leafId(A.origin,SEASON_ORDER[i+1])};
+  }
+  /* 茶叶 + 净水 → 生茶（还没煮，不能交单） */
+  if(A.chain==='leaf'&&bWater) return {id:rawId(A.origin,A.season)};
+  if(B.chain==='leaf'&&aWater) return {id:rawId(B.origin,B.season)};
+  /* 生茶 + 壶 → 茶汤（用壶烧；壶不消耗，烧完还在） */
+  if(A.chain==='raw'&&bCanBrew)  return {id:teaId(A.origin,A.season), keepPot:true};
+  if(B.chain==='raw'&&aCanBrew)  return {id:teaId(B.origin,B.season), keepPot:true};
+  /* 茶汤 + 好壶 → 特调茶（壶不消耗） */
+  if(A.chain==='tea'&&bGoodPot)   return {id:brewId(A.origin,A.season), keepPot:true};
+  if(B.chain==='tea'&&aGoodPot)   return {id:brewId(B.origin,B.season), keepPot:true};
+  if(A.chain==='brew'&&B.chain==='brew') return {id:'顶级香茗'};
+  const k=[a,b].sort().join('|');
+  if(STATIC_RECIPE[k]) return {id:STATIC_RECIPE[k]};
+  return null;
+}
+
+/* ---------------- NPC / 订单 ---------------- */
+const NPCS=[
+  {id:'fan', name:'摇扇大爷', face:FACES.fan, unlock:0, brew:'variant', pot:null,
+   coins:30, diamonds:3, hammers:0, parts:0,
+   lines:['哎哟，今儿个口渴，来壶好茶。','扇子一收：这茶香得正，快给我沏上！','大爷抿了一口：嗯，有点门道儿。']},
+  {id:'scholar', name:'长衫书生', face:FACES.scholar, unlock:1, brew:'顶级香茗', pot:'防锈铁壶',   // 策划案：3级茶 + 3级铁壶
+   coins:70, diamonds:8, hammers:1, parts:0,
+   lines:['我要办诗会，需要一壶好茶配一把好壶。','诗会要开始了，茶与壶，缺一不可。','书生抚掌：好壶好茶，今日雅事。']},
+  {id:'master', name:'老掌柜', face:FACES.master, unlock:2, brew:'顶级香茗', pot:'一本堂茶壶',
+   coins:40, diamonds:25, hammers:2, parts:1,
+   lines:['让我看看你的手艺。交出【一本堂茶壶】和【顶级香茗】。','老掌柜眯眼：这火候，不像是新手。','柜台后传来一声轻笑：……还行。']}
+];
+const PRAISE={
+  fan:{mq:'「明前的？」大爷眼睛一亮，「好东西就该配好壶，今儿个我请了。」',yq:'「雨前的也成，泡浓些，够味儿。」',cw:'「春尾的？……行吧，有总比没有强。」'},
+  scholar:{mq:'「明前！这一席，诗会稳了。」书生抚掌而笑。',yq:'「雨前虽逊一分，也算雅事。」',cw:'「春尾……留着日常饮罢。」'}
+};
+const TIPS=[
+  {t:'铁壶要"养"', d:'新铁壶第一次用之前，先用淡茶汤反复煮几遍，让茶汤里的单宁在铁面结成一层保护膜，壶就越好用越亮。'},
+  {t:'草木灰是碱性的', d:'草木灰溶在水里偏碱，能让铁面钝化一层，不容易生锈。旧时铁壶用碱水洗去浮锈，再以茶汤养之，是老底子的法子。'},
+  {t:'茶垢要常常擦', d:'茶汤里的单宁与铁结合会析出红褐色的茶垢。茶垢太厚，包浆就长不动了——所以养壶要"抹了再擦，擦了再抹"。'},
+  {t:'龙井与红梅', d:'西湖龙井是绿茶，清香甘冽，最耐泡；九曲红梅是红茶，发酵后汤色红浓，香如梅花。一冷一红，客人各有所好。'},
+  {t:'明前 / 雨前 / 春尾', d:'明前是清明前的单芽，产量少、滋味最鲜；雨前芽叶味厚有骨；春尾已近谷雨，叶粗而涩，最耐泡。'},
+  {t:'拼配', d:'两种茶取长补短叫拼配——龙井的鲜配红梅的厚，是茶庄的老规矩。两杯特调拼在一起，就是顶级香茗。'},
+  {t:'铁导热快', d:'铁比陶瓷导热快得多：水滚得快，也滚得均匀，煮茶时能把水的燥火压下去。'},
+  {t:'茶为国饮', d:'陆羽《茶经》是世界上第一部茶学专著。杭州自唐以降就是茶的产地之一，径山茶宴更是唐宋名事。'},
+  {t:'好茶配好器', d:'茶是味觉，器是触感。铁壶煮水、盖碗泡茶、老茶客那把养了十年的紫砂——器对了，茶才出得来。'},
+  {t:'包浆是时间的礼物', d:'包浆不是刷上去的，是铁面氧化层被日日茶汤养出来的，所以每一把都不一样。'}
+];
+
+/* ---------------- 肌理 ---------------- */
+const TEX={base:['青灰','玄黑','枣红','黛蓝','豆青','蟹壳青','酱紫','乌木'],
+  lustre:['温润如脂','泛着一层哑光','像水波在表面流转','包浆像琥珀','釉面开细小冰片','隐隐透出冷光','像老木头那样沉'],
+  grain:['细密如鱼子','锤目点点','竹节般一节一节','砂粒般粗粝','流线如泼墨','如老木的年轮','像雨过之后的山石'],
+  detail:['底款钤着「一本堂」朱印','盖钮像一粒小珠子','流口微微上翘','提梁上缠着旧麻绳','壶把内侧留着一线亮色','盖沿磕出一个小豁口','底足磨得发亮'],
+  pre:['这一把','这把壶','它','此壶','手边这把']};
+function makeTexture(){
+  const p=a=>a[Math.floor(Math.random()*a.length)];
+  return p(TEX.pre)+p(TEX.base)+'的底子，'+p(TEX.lustre)+'，'+p(TEX.grain)+'，'+p(TEX.detail)+'。';
+}
+
+/* ---------------- 棋盘布局 ---------------- */
+const SIZE=7, NCELL=SIZE*SIZE;
+const LAYOUT=[
+  ['C','C','W','C','C','W','C'],
+  ['C','K','C','B','C','C','D'],
+  ['W','C','E','.','.','F','C'],
+  ['C','A','C','.','.','.','C'],
+  ['C','C','.','.','.','.','W'],
+  ['W','C','G','.','.','I','C'],
+  ['C','W','C','C','J','C','C']
+];
+const GENOF={A:'铁砧',B:'陶窑',D:'炒茶灶',E:'铁矿堆',F:'泥料坑',G:'龙井茶园',I:'水缸',J:'水车',K:'草木灰炉'};
+const SPECIALS=['铁砧','陶窑','炒茶灶','水车','草木灰炉'];
+
+function freshCells(){
+  const cells=[];
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+    const ch=LAYOUT[r][c];
+    if(ch==='.')cells.push({t:'empty'});
+    else if(ch==='C')cells.push({t:'crate'});
+    else if(ch==='W')cells.push({t:'weed'});
+    else cells.push({t:'gen',gen:GENOF[ch],covered:SPECIALS.indexOf(GENOF[ch])>=0});
+  }
+  return cells;
+}
+
+/* ---------------- 状态 ---------------- */
+const SAVEKEY='yibentang_progress_v2';
+let state=null;
+function newState(){
+  return {
+    cells:freshCells(), coins:80, diamonds:0, hammers:0, parts:0,
+    deliveries:0,
+    cleared:false,       // 三个订单都交齐 = 通关
+    served:{fan:0,scholar:0,master:0},
+    orders:{fan:{origin:'lj',pref:'mq'}, scholar:{origin:'lj',pref:'mq'}, master:{origin:'lj',pref:'mq'}},
+    progress:{fan:{},scholar:{},master:{}},
+    slotTex:{fan:[],scholar:[],master:[]},
+    slotLog:{fan:[],scholar:[],master:[]},
+    slotItems:{fan:[],scholar:[],master:[]},
+    codex:[], teas:[], tipsSeen:[], stash:{},
+    found:{},     // itemId -> {n,date}  做出来过一次就永久记进图鉴
+    recipes:{},   // 配方键 -> {a,b,out,date}  合成过一次就永久解锁配方
+    clay:{},          // 纹样 id -> {n,date}
+    clayBoxes:0,      // 未开启的神秘泥模
+    scenes:{},        // 已解锁的动态壁纸场景
+    tut:{idx:0,latch:{},got:{leaf:0,yq:0,mq:0,water:0,raw:0,pot:0,tea:0,ash:0,top:0,rub:0,potWater:0,wash:0,delivered:0,delivered2:0,delivered3:0}},   // 新手引导
+    gardens:{lj:true,hm:false},
+    sound:true, intro:false, coach:{pot:false}
+  };
+}
+function save(){ try{ localStorage.setItem(SAVEKEY, JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    const raw=localStorage.getItem(SAVEKEY);
+    if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(!s||!Array.isArray(s.cells)||s.cells.length!==NCELL) return null;
+    ['fan','scholar','master'].forEach(id=>{
+      if(!s.progress)s.progress={}; if(!s.progress[id])s.progress[id]={};
+      if(!s.slotTex)s.slotTex={};  if(!s.slotTex[id])s.slotTex[id]=[];
+      if(!s.slotLog)s.slotLog={};  if(!s.slotLog[id])s.slotLog[id]=[];
+      if(!s.slotItems)s.slotItems={}; if(!s.slotItems[id])s.slotItems[id]=[];
+      if(!s.orders)s.orders={};  if(!s.orders[id])s.orders[id]={origin:'lj',pref:'mq'};
+    });
+    if(!s.stash)s.stash={}; if(!s.served)s.served={fan:0,scholar:0,master:0};
+    if(typeof s.cleared!=='boolean')s.cleared=false;
+    if(!s.tipsSeen)s.tipsSeen=[]; if(!s.codex)s.codex=[]; if(!s.teas)s.teas=[];
+    if(!s.gardens)s.gardens={lj:true,hm:false};
+    if(!s.clay)s.clay={}; if(!s.scenes)s.scenes={}; if(typeof s.clayBoxes!=='number')s.clayBoxes=0;
+    if(!s.tut)s.tut={idx:0,latch:{},got:{leaf:0,yq:0,mq:0,water:0,raw:0,pot:0,tea:0,ash:0,top:0,rub:0,potWater:0,wash:0,delivered:0,delivered2:0,delivered3:0}};
+    if(!s.tut.got) s.tut.got={};
+    ['leaf','yq','mq','water','raw','pot','tea','ash','top','rub','potWater','wash','delivered','delivered2','delivered3']
+      .forEach(function(k){ if(typeof s.tut.got[k]!=='number') s.tut.got[k]=0; });
+    if(!s.found)s.found={}; if(!s.recipes)s.recipes={};
+    if(!s.coach)s.coach={pot:false};
+    return migrate(s);
+  }catch(e){ return null; }
+}
+
+/* 老存档迁移：三个产区（狮峰山/梅家坞/满觉陇）→ 两种主茶（西湖龙井/九曲红梅）
+   物品 id 形如 L_lj_cw / C_hm_mq / B_hm_cw。 */
+const OLD_ORIGIN={sf:'lj',mjw:'lj',mjl:'hm'};
+function migOrigin(o){ return (o&&OLD_ORIGIN[o])||o; }
+function migId(id){
+  if(typeof id!=='string') return id;
+  const m=id.match(/^([LRCB])_([a-z]+)_([a-z]+)$/);
+  if(!m) return id;
+  const n=migOrigin(m[2]);
+  return n===m[2]?id:m[1]+'_'+n+'_'+m[3];
+}
+function migrate(s){
+  if(!s) return s;
+  (s.cells||[]).forEach(function(c){ if(c&&c.id) c.id=migId(c.id); });
+  ['fan','scholar','master'].forEach(function(id){
+    if(s.orders&&s.orders[id]&&s.orders[id].origin) s.orders[id].origin=migOrigin(s.orders[id].origin);
+  });
+  if(s.gardens){
+    const g={};
+    Object.keys(s.gardens).forEach(function(k){ const n=migOrigin(k); g[n]=g[n]||s.gardens[k]; });
+    /* 开过任何一个付费旧茶园（梅家坞 240 / 满觉陇 560）→ 红梅园直接解锁，别让老玩家再付一次钱 */
+    if(s.gardens.mjw||s.gardens.mjl) g.hm=true;
+    s.gardens=g;
+  }
+  if(s.found){ const f={}; Object.keys(s.found).forEach(function(k){ const n=migId(k); f[n]=f[n]||s.found[k]; }); s.found=f; }
+  if(s.recipes){
+    const r={};
+    Object.keys(s.recipes).forEach(function(k){
+      let nk=k;
+      if(k!=='__brew2') nk=k.split('|').map(migId).sort().join('|');
+      const v=s.recipes[k];
+      r[nk]=r[nk]||(v&&{a:migId(v.a),b:migId(v.b),out:migId(v.out),date:v.date});
+    });
+    s.recipes=r;
+  }
+  if(Array.isArray(s.teas)) s.teas=s.teas.map(migId);
+  if(Array.isArray(s.codex)) s.codex.forEach(function(e){
+    if(e){ if(e.item) e.item=migId(e.item); if(e.id) e.id=migId(e.id); if(e.teaO) e.teaO=migOrigin(e.teaO); }
+  });
+  if(s.slotItems) Object.keys(s.slotItems).forEach(function(k){
+    (s.slotItems[k]||[]).forEach(function(e){ if(e&&e.item) e.item=migId(e.item); });
+  });
+  if(s.slotLog) Object.keys(s.slotLog).forEach(function(k){
+    s.slotLog[k]=(s.slotLog[k]||[]).map(migId);
+  });
+  return s;
+}
+
+/* 竖屏窄屏时提示转屏：8 秒后自动收，手动关掉就不再打扰 */
+let rotateTipTimer=null;
+function maybeRotateTip(){
+  const el=$('#rotateTip'); if(!el) return;
+  const narrow=window.innerWidth<680 && window.innerHeight>window.innerWidth;
+  if(!narrow){ el.classList.remove('show'); return; }
+  if(localStorage.getItem('ybt_rotate_tip_off')==='1') return;
+  el.classList.add('show');
+  if(rotateTipTimer) clearTimeout(rotateTipTimer);
+  rotateTipTimer=setTimeout(function(){ el.classList.remove('show'); },8000);
+}
+function closeRotateTip(){
+  const el=$('#rotateTip'); if(el) el.classList.remove('show');
+  try{ localStorage.setItem('ybt_rotate_tip_off','1'); }catch(e){}
+}
+
+let sel=null;      // {kind:'board',idx}
+let drag=null;     // 拖拽载荷
+let care=null;     // 养护模式 {idx}
+let pressTimer=null;
+let lastDropAt=0;  // 最近一次投放完成的时间，用来区分「点击」和「刚拖完」
+let guideBusy=false; // 拖拽进行中：光标让位，等松手再回来
+const RUB_STEP=28; // 每涂多少像素算一次
+
+/* ---------------- 音效 ---------------- */
+const Snd={
+  ctx:null,
+  boot(){ if(!this.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(AC)this.ctx=new AC(); } if(this.ctx&&this.ctx.state==='suspended')this.ctx.resume(); },
+  tone(f,t,dur,type,vol){
+    if(!this.ctx)return;
+    const o=this.ctx.createOscillator(),g=this.ctx.createGain();
+    o.type=type; o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(this.ctx.destination); o.start(t); o.stop(t+dur+0.03);
+  },
+  noise(t,dur,vol,freq,q){
+    if(!this.ctx)return;
+    const len=Math.floor(this.ctx.sampleRate*dur);
+    const buf=this.ctx.createBuffer(1,len,this.ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+    const src=this.ctx.createBufferSource(); src.buffer=buf;
+    const f=this.ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=freq; f.Q.value=q||1.2;
+    const g=this.ctx.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    src.connect(f); f.connect(g); g.connect(this.ctx.destination); src.start(t); src.stop(t+dur);
+  },
+  click(){ if(!this.ctx)return; const t=this.ctx.currentTime; this.tone(760,t,0.07,'triangle',0.06); },
+  ding(){ if(!this.ctx)return; const t=this.ctx.currentTime;
+    this.tone(1180,t,0.42,'triangle',0.10); this.tone(1770,t+0.004,0.30,'triangle',0.05); this.noise(t,0.09,0.05,2600,2.4); },
+  gurgle(){ if(!this.ctx)return; const t=this.ctx.currentTime;
+    for(let i=0;i<3;i++) this.tone(150+i*22+Math.random()*20,t+i*0.11,0.16,'sine',0.08);
+    this.noise(t+0.05,0.22,0.022,520,0.9); },
+  chime(){ if(!this.ctx)return; const t=this.ctx.currentTime; [523,659,784,1047].forEach((f,i)=>this.tone(f,t+i*0.075,0.42,'triangle',0.075)); },
+  thud(){ if(!this.ctx)return; const t=this.ctx.currentTime; this.noise(t,0.16,0.07,180,0.8); this.tone(110,t,0.14,'sine',0.07); },
+  coin(){ if(!this.ctx)return; const t=this.ctx.currentTime; this.tone(1320,t,0.10,'triangle',0.06); this.tone(1980,t+0.06,0.14,'triangle',0.045); },
+  rub(){ if(!this.ctx)return; const t=this.ctx.currentTime; this.noise(t,0.13,0.028,900+Math.random()*700,0.7); }
+};
+function sfx(n){ if(!state||!state.sound)return; Snd.boot(); if(Snd[n])Snd[n](); }
+
+/* 茶童 */
+const MASCOT_SVG = SV(
+  '<path d="M12 48c0-8 5-12 12-12s12 4 12 12z" fill="#7d9c86" stroke="#5c7566" stroke-width="1.4"/>'+
+  '<path d="M20 38h8v5h-8z" fill="#f2ddc2" stroke="#c9a583" stroke-width="1.2"/>'+
+  '<circle cx="24" cy="27" r="14" fill="#f2ddc2" stroke="#c9a583" stroke-width="1.5"/>'+
+  '<path d="M9.5 22c0-8.5 6.5-15 14.5-15s14.5 6.5 14.5 15c0 1.5-1 2.5-2.5 2.5H12c-1.5 0-2.5-1-2.5-2.5z" fill="#fbf9f2" stroke="#b9ae94" stroke-width="1.5"/>'+
+  '<path d="M9 25c0-1.8 1.2-3 3-3h24c1.8 0 3 1.2 3 3" fill="none" stroke="#b9ae94" stroke-width="2"/>'+
+  '<path d="M13 18c3.5-4.5 8-6.5 12-6.5" fill="none" stroke="#d6cbb2" stroke-width="3" stroke-linecap="round"/>'+
+  '<circle cx="18.5" cy="28" r="2" fill="#3f382f"/><circle cx="29.5" cy="28" r="2" fill="#3f382f"/>'+
+  '<circle cx="19.2" cy="27.3" r=".7" fill="#fff"/><circle cx="30.2" cy="27.3" r=".7" fill="#fff"/>'+
+  '<path d="M20.5 33.5c2.2 2.2 4.8 2.2 7 0" fill="none" stroke="#a8785a" stroke-width="1.9" stroke-linecap="round"/>'+
+  '<circle cx="13.5" cy="31.5" r="2.4" fill="#e8b9a4" opacity=".6"/><circle cx="34.5" cy="31.5" r="2.4" fill="#e8b9a4" opacity=".6"/>');
+const HINTS=[
+  '两个一样的东西，<b>把一个拖到另一个身上</b>，就合成更高级的那个——所有升级都按这个规矩。',
+  '草木灰是碱性的，擦一擦铁就不生锈。这是老底子的养壶法。',
+  '<b>明前茶</b>最鲜，抹一次多长 2 点包浆；可客人也最爱明前。给谁，你自己掂量。',
+  '一把壶的包浆是<b>养</b>出来的，不是合出来的。急不得。',
+  '<b>茶必须用壶烧</b>：生茶拖到铁壶上（壶上会标「烧」）烧出茶汤；茶汤再拖到好壶上（标「萃」）才是特调。',
+  '壶上五件事别搞混：拖<b>生茶</b>=<b>烧茶</b>，拖<b>茶汤</b>到好壶=<b>萃特调</b>，拖<b>茶汤</b>到普通壶=<b>灌水</b>，拖<b>草木灰</b>=<b>碱洗</b>，<b>长按</b>壶划动=<b>抹抹茶汁</b>。',
+  '拆木箱能腾地方，一格 36 铜钱。拆不动的时候，先把旁边的清掉。',
+  '<b>草木灰</b>不再白送：外围有台<b>草木灰炉</b>，花铜钱把上头的木箱清开就能用。茶垢堆到 40 就抹不动，得拿草木灰擦。',
+  '茶要趁热喝，壶要趁热养。一壶好茶配一把好壶，这才有雅意。',
+  '好壶拖到<b>售壶处</b>能卖钱；没用的东西拖到回收筐，只清位置，不给钱。',
+  '<b>三个订单就是通关</b>：摇扇大爷 → 长衫书生 → 老掌柜，一单一单来，别跳。'
+];
+let hintTick=0;
+/* ---------------- 新手引导（分步 + 光标指引） ---------------- */
+function firstItemEl(id){
+  for(let i=0;i<state.cells.length;i++){
+    if(state.cells[i].t==='item'&&state.cells[i].id===id){
+      const e=document.querySelector('.cell[data-i="'+i+'"] .item');
+      if(e) return e;
+    }
+  }
+  return null;
+}
+/* 按「链 / 时节 / 档位」找棋盘上的东西——不写死 id，改茶种改产区都不会失效 */
+function firstItemWhere(pred){
+  for(let i=0;i<state.cells.length;i++){
+    const c=state.cells[i];
+    if(c.t!=='item') continue;
+    const it=ALL[c.id];
+    if(!it||!pred(it)) continue;
+    const e=document.querySelector('.cell[data-i="'+i+'"] .item');
+    if(e) return e;
+  }
+  return null;
+}
+const TUT_STEPS=[
+  {id:'leaf',    text:'先点<b>茶园</b>，采一把春尾叶出来。',                       got:'leaf',
+   sel:function(){ return document.querySelector('.cell[data-i="'+idxOf(5,2)+'"] .gen'); }},
+  {id:'merge2',  text:'再点一次茶园凑成两片，然后<b>把一片春尾叶拖到另一片身上</b>——松手就合成一片雨前叶。', got:'yq',
+   sel:function(){ return firstItemWhere(function(it){ return it.chain==='leaf'&&it.season==='cw'; }); }},
+  {id:'tomq',    text:'同样的办法再来一次（先采四片，再两两拖到一起），就能拼出一片<b>明前叶</b>。', got:'mq',
+   sel:function(){ return firstItemWhere(function(it){ return it.chain==='leaf'&&it.season==='yq'; }); }},
+  {id:'water',   text:'点<b>水缸</b>舀两滴水，<b>把两滴水拖到一片</b>，就合成净水。',  got:'water',
+   sel:function(){ return document.querySelector('.cell[data-i="'+idxOf(5,5)+'"] .gen'); }},
+  {id:'raw',     text:'把<b>明前叶拖到净水上</b>，得一杯<b>生茶</b>——生茶还没烧，不能交单。', got:'raw',
+   sel:function(){ return firstItemWhere(function(it){ return it.chain==='leaf'&&it.season==='mq'; }); }},
+  {id:'pot',     text:'该做壶了：<b>铁矿堆</b>出精铁矿、<b>泥料坑</b>出坚固泥模，合出壶胚；<b>两只壶胚</b>合成素面铁壶。', got:'pot',
+   sel:function(){ return document.querySelector('.cell[data-i="'+idxOf(2,2)+'"] .gen'); }},
+  {id:'tea',     text:'<b>把生茶拖到素面铁壶上</b>——这就是<b>烧茶</b>，壶上会亮出「烧」字。（壶不会坏，烧完还在）', got:'tea',
+   sel:function(){ return firstItemWhere(function(it){ return it.chain==='pot'&&it.tier>=2; }); }},
+  {id:'deliver', text:'把茶<b>拖到摇扇大爷的头像上</b>（或者点卡片上的「交付」），把这单交掉。', got:'delivered',
+   sel:function(){ return document.querySelector('[data-npc="fan"]'); }},
+  {id:'care',    text:'壶要养：先做一杯<b>茶汤</b>拖到壶上（标「灌」）补额度，再<b>长按</b>铁壶、手指在壶上划一划抹<b>抹茶汁</b>，包浆满了升一阶（壶上会亮「抹」字）。', got:'rub',
+   sel:function(){ return firstItemWhere(function(it){ return it.chain==='pot'; }); }},
+  {id:'ash',     text:'茶垢厚了抹不动，就要<b>草木灰</b>碱洗：棋盘角落那台<b>草木灰炉</b>，花 36 铜钱清开木箱就能用，产出草木灰；把它拖到壶上（壶上标「擦」），浮灰 −60。', got:'ash',
+   sel:function(){ return document.querySelector('.cell[data-i="8"] .gen, .cell[data-i="8"] .obs'); }},
+  {id:'top',     text:'<b>顶级香茗</b>是两杯<b>特调茶</b>拼出来的：<b>生茶</b>拖到<b>素面铁壶</b>上烧成<b>茶汤</b>，<b>茶汤</b>再拖到<b>防锈以上的好壶</b>上萃成<b>特调</b>；<b>两杯特调拖到一起</b>就是顶级香茗。（好壶不会坏，一把好壶能连萃两杯）', got:'top',
+   sel:function(){ return document.querySelector('.cell[data-i="'+idxOf(5,2)+'"] .gen'); }},
+  {id:'order2',  text:'第二单交给<b>长衫书生</b>：一盏<b>顶级香茗</b>，配一把<b>防锈铁壶</b>。', got:'delivered2',
+   sel:function(){ return document.querySelector('[data-npc="scholar"]'); }},
+  {id:'order3',  text:'最后一单是<b>老掌柜</b>：<b>一本堂茶壶</b>配<b>顶级香茗</b>。<b>三个订单交齐，就是通关。</b>', got:'delivered3',
+   sel:function(){ return document.querySelector('[data-npc="master"]'); }}
+];
+function noteCraft(id){
+  const t=state.tut; if(!t||!t.got) return;
+  const it=ALL[id]; if(!it) return;
+  // 按「链 + 时节 + 档位」记，不写死具体 id：改茶种、改产区都不会再把引导卡住
+  if(it.chain==='leaf'&&it.season==='cw') t.got.leaf=1;
+  else if(it.chain==='leaf'&&it.season==='yq') t.got.yq=1;
+  else if(it.chain==='leaf'&&it.season==='mq') t.got.mq=1;
+  else if(it.chain==='water'&&it.tier>=2) t.got.water=1;
+  else if(it.chain==='tea') t.got.tea=1;
+  else if(it.chain==='raw') t.got.raw=1;
+  else if(it.chain==='ash') t.got.ash=1;
+  else if(it.chain==='brew2') t.got.top=1;
+  else if(it.chain==='pot'&&potTier(id)>=2) t.got.pot=1;
+}
+function tutorialStep(){
+  const t=state.tut; if(!t) return null;
+  while(t.idx<TUT_STEPS.length){
+    const s=TUT_STEPS[t.idx];
+    if(t.latch[s.id] || (t.got&&t.got[s.got])){ t.latch[s.id]=true; t.idx++; continue; }
+    return s;
+  }
+  return null;
+}
+function skipTutorial(){
+  state.tut.idx=TUT_STEPS.length;
+  state.tut.latch={};
+  render(); save();
+}
+function updateGuide(){
+  const g=$('#guide');
+  if(!g) return;
+  // 正在拖东西 / 正在养护壶的时候，光标让位，等松手再回来
+  if(guideBusy||care||(drag&&drag.payload)){
+    g.classList.remove('on');
+    return;
+  }
+  const step=tutorialStep();
+  let el=null;
+  if(step&&step.sel){ try{ el=step.sel(); }catch(e){ el=null; } }
+  if(!el){ g.classList.remove('on'); return; }
+  const r=el.getBoundingClientRect();
+  if(!r||r.width<=0||r.height<=0){ g.classList.remove('on'); return; }
+  g.style.left=(r.left+r.width/2)+'px';
+  g.style.top=(r.top+r.height/2)+'px';
+  g.classList.add('on');
+}
+/* 拖动时跟着手指的物品名 */
+function dragNameFor(cell){
+  const it=ALL[cell.id];
+  if(!it) return cell.id;
+  if(it.pot&&(cell.patina||0)>0) return it.name+'（包浆 '+Math.round(cell.patina)+'%）';
+  return it.name;
+}
+function showDragLabel(text){
+  const el=$('#dragLabel');
+  if(!el) return;
+  el.innerHTML=text;
+  el.dataset.base=text;
+  el.style.display='block';
+}
+/* 拖到壶上时，标签后面补一句「→ 烧茶 / 灌水 / 碱洗」，别让人猜 */
+function updateDragLabel(act){
+  const el=$('#dragLabel');
+  if(!el||el.style.display==='none') return;
+  const base=el.dataset.base||el.textContent;
+  el.innerHTML=act?(base+' <b>→ '+ACT_LABEL[act]+'</b>'):base;
+}
+function moveDragLabel(x,y){ const el=$('#dragLabel'); if(!el||el.style.display==='none')return; el.style.left=x+'px'; el.style.top=(y+34)+'px'; }
+function hideDragLabel(){ const el=$('#dragLabel'); if(el) el.style.display='none'; }
+
+function mascotHint(){
+  const tut=tutorialStep();
+  if(tut) return tut.text;
+  if(state.clayBoxes>0) return '有个<b>神秘泥模</b>！点开看看能开出哪把錾纹壶。';
+  const teaOn=state.cells.some(c=>c.t==='item'&&ALL[c.id]&&ALL[c.id].chain==='tea');
+  const potOn=state.cells.some(c=>c.t==='item'&&ALL[c.id]&&ALL[c.id].chain==='pot');
+  if(state.cleared && teaOn && !potOn) return '大爷的单子升级成<b>特调茶</b>了，得用好壶：铁矿堆出<b>精铁矿</b>、泥料坑出<b>泥模</b>，合出壶胚，两只壶胚合成<b>素面铁壶</b>；壶要养到<b>防锈</b>以上，<b>茶汤</b>拖上去才萃得出特调。';
+  const pots=state.cells.filter(c=>c.t==='item'&&ALL[c.id]&&ALL[c.id].pot);
+  const pot=pots[0];
+  if(pot&&(pot.tare||0)>=40) return '茶垢太厚，抹不动了。把<b>草木灰</b>拖到壶上擦一擦。';
+  if(pot&&(pot.charges||0)<=0&&(pot.patina||0)<100) return '壶里没茶水了。做一杯<b>茶汤</b>拖到壶上，给它灌一次水。';
+  if(pot&&!state.coach.pot) return '这铁壶还没开过呢。<b>长按</b>它，然后在壶上划一划——那就是抹茶汁。';
+  if(state.cells.some(c=>c.t==='item'&&c.id==='一本堂茶壶')) return '包浆养出来了！这样的壶交上去，价钱是不一样的。';
+  // 钱不够扩地了：提醒卖壶 / 回收，别卡在这儿
+  if(state.coins<26 && state.cells.some(c=>c.t==='item'&&ALL[c.id]&&ALL[c.id].pot))
+    return '铜钱不够扩地了？把壶拖到<b>售壶处</b>换钱；不要的东西拖到<b>回收筐</b>清位置。壶和材料都能重做，钱的事好解决。';
+  const npc=NPCS.filter(n=>state.deliveries>=n.unlock && orderSlots(n).length>0)[0];
+  if(npc&&npc.brew==='variant'){
+    const o=state.orders[npc.id].origin;
+    const has=state.cells.some(c=>c.t==='item'&&ALL[c.id]&&ALL[c.id].origin===o&&ALL[c.id].chain==='brew');
+    if(!has) return npc.name+'要的是<b>'+ORIGINS[o].name+'</b>的茶。没有就开一座'+ORIGINS[o].gen+'（<b>茶园</b>里能买）。';
+  }
+  if(!state.gardens.hm&&state.coins>=ORIGINS.hm.price) return '手里有 '+state.coins+' 铜钱，够开一座<b>红梅茶园</b>了。去<b>茶园</b>看看？';
+  return HINTS[(hintTick++)%HINTS.length];
+}
+function renderMascot(){
+  const boy=$('#mascotBoy');
+  if(boy&&!boy.innerHTML) boy.innerHTML=MASCOT_SVG;
+  const say=$('#mascotSay');
+  if(!say) return;
+  const tut=tutorialStep();
+  if(tut){
+    const pct=Math.round((state.tut.idx/TUT_STEPS.length)*100);
+    say.innerHTML=mascotHint()+
+      '<span class="skip" id="tutSkip">跳过引导</span>'+
+      '<span class="tutbar"><i style="width:'+pct+'%"></i></span>';
+    const sk=document.getElementById('tutSkip');
+    if(sk) sk.onclick=function(e){ if(e&&e.stopPropagation) e.stopPropagation(); skipTutorial(); };
+  } else {
+    say.innerHTML=mascotHint();
+  }
+}
+
+/* ---------------- 渲染 ---------------- */
+function iconHTML(id){ const it=ALL[id]; return it?SV(it.icon):''; }
+function renderHud(){
+  $('#cCoin').textContent=state.coins; $('#cDia').textContent=state.diamonds;
+  $('#cHam').textContent=state.hammers; $('#cPart').textContent=state.parts;
+  $('#btnSound').textContent = state.sound?'音效开':'音效关';
+  $('#btnSound').classList.toggle('off',!state.sound);
+}
+function countOnBoard(id){ let n=0; for(const c of state.cells) if(c.t==='item'&&c.id===id)n++; return n; }
+function npcById(id){ return NPCS.filter(n=>n.id===id)[0]; }
+function orderSlots(npc){
+  const o=state.orders[npc.id], out=[];
+  // 本轮（通关之前）每位客人只接一单：交掉就了结，等通关后再开门
+  if(!state.cleared && (state.served[npc.id]||0)>0) return out;
+  if(npc.brew==='variant'){
+    // 摇扇大爷的第一单是「教学单」：只要一盏该茶种的茶汤。
+    // 交掉这单之后，他的单子才升级成要特调茶（＝茶汤 + 防锈铁壶）。
+    if(npc.id==='fan' && (state.served.fan||0)===0){
+      out.push({key:'brew',kind:'tea',origin:o.origin,label:ORIGINS[o.origin].name+SEASONS[o.pref].name+'茶',
+                iconId:teaId(o.origin,o.pref),pref:o.pref});
+    } else {
+      out.push({key:'brew',kind:'brew',origin:o.origin,label:ORIGINS[o.origin].name+'特调茶',iconId:brewId(o.origin,o.pref),pref:o.pref});
+    }
+  }
+  else if(npc.brew) out.push({key:'brew',kind:'item',item:npc.brew,label:npc.brew,iconId:npc.brew});
+  if(npc.pot) out.push({key:'pot',kind:'item',item:npc.pot,label:npc.pot,iconId:npc.pot});
+  return out;
+}
+function slotMatches(spec,id){
+  const it=ALL[id]; if(!it) return false;
+  if(spec.kind==='item') return id===spec.item;
+  if(spec.kind==='brew') return it.chain==='brew'&&it.origin===spec.origin;
+  if(spec.kind==='tea')  return it.chain==='tea'&&it.origin===spec.origin;
+  return false;
+}
+const ORDER_NO={fan:1,scholar:2,master:3};
+function renderOrders(){
+  const wrap=$('#orders'); wrap.innerHTML='';
+  const cbar=$('#clearedBar');
+  if(state.cleared){
+    cbar.className='on';
+    cbar.innerHTML='<b>已通关</b> · 三个订单都交齐了。往后是自由经营：客人照来，泥模照掉，錾纹照集。';
+  } else { cbar.className=''; cbar.innerHTML=''; }
+  for(const npc of NPCS){
+    const locked=state.deliveries<npc.unlock;
+    const card=document.createElement('div');
+    card.className='npc'+(locked?' locked':'');
+    card.dataset.npc=npc.id;
+    const slots=npcReqsOf(npc);
+    const settled=(!locked && slots.length===0);
+    const reqs=slots.map(s=>{
+      const filled=state.progress[npc.id][s.key]||0;
+      const done=filled>=1;
+      const have=slotsHave(npc,s);
+      const tag=done?'✓':(filled+'/1');
+      const extra=(!done&&have>0)?('架上'+have):'';
+      return '<span class="req'+(done?' ok':'')+'" data-req="'+s.key+'">'+iconHTML(s.iconId)+'<span>'+s.label+'</span><b>'+tag+'</b>'+(extra?'<i>'+extra+'</i>':'')+'</span>';
+    }).join('');
+    const prefTag = npc.brew==='variant' ? ('<i class="pref">喜'+SEASONS[state.orders[npc.id].pref].name+'</i>') : '';
+    const ready=!locked&&!settled&&slots.every(s=>(state.progress[npc.id][s.key]||0)>=1);
+    const needGarden = (!locked && npc.brew==='variant' && !state.gardens[state.orders[npc.id].origin]);
+    card.innerHTML=
+      '<div class="row"><div class="av">'+npc.face+'</div><div class="who">'+npc.name+
+      (npc.id==='fan'&&(state.served.fan||0)===0?'<span class="firsttag">第一个任务</span>':'')+
+      '</div><div class="cnt" title="已服务 '+state.served[npc.id]+' 单">'+
+        (state.cleared?(state.served[npc.id]+' 单'):('第 '+ORDER_NO[npc.id]+' 单'))+'</div></div>'+
+      '<div class="reqs">'+(locked?('<span class="req">再来 '+Math.max(0,npc.unlock-state.deliveries)+' 单后解锁</span>'):(settled?'<span class="req ok">这一单已经了结</span>':reqs))+'</div>'+
+      ((locked||settled)?'':
+        '<button class="give'+(ready?'':' dim')+'" data-act="give"'+(ready?' data-ready="1"':'')+'>'+(ready?'完 成':'交 付')+'</button>'+
+        (npc.brew==='variant'?'<button class="give reroll" data-act="reroll">换一单 (💎10)</button>':'')) +
+      (needGarden?('<div class="need">需开 '+ORIGINS[state.orders[npc.id].origin].gen+'<button data-buy2="'+state.orders[npc.id].origin+'">去开</button></div>'):'')+
+      (prefTag&&!locked&&!settled?('<div class="need">'+prefTag+'</div>'):'');
+    wrap.appendChild(card);
+  }
+}
+function npcReqsOf(npc){ return orderSlots(npc); }
+function slotsHave(npc,s){
+  let n=0;
+  for(const c of state.cells) if(c.t==='item'&&slotMatches(s,c.id)) n++;
+  return n;
+}
+function ringCircles(cell){
+  if(!ALL[cell.id]||!ALL[cell.id].pot) return '';
+  const p=Math.round(cell.patina||0);
+  if(p<=0) return '';
+  const r=19, C=2*Math.PI*r;
+  return '<circle cx="24" cy="24" r="'+r+'" stroke="rgba(0,0,0,.14)" stroke-width="3"/>'+
+         '<circle cx="24" cy="24" r="'+r+'" stroke="'+hsl(38,62,52)+'" stroke-width="3" stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-p/100))+'" transform="rotate(-90 24 24)"/>';
+}
+function potRing(cell){
+  if(!ALL[cell.id]||!ALL[cell.id].pot) return '';
+  return '<svg class="ring" viewBox="0 0 48 48">'+ringCircles(cell)+'</svg>';
+}
+/* 只刷新一格，不整盘重绘——手指按在壶上时 DOM 不能被换掉 */
+function refreshPot(i){
+  const c=state.cells[i];
+  const cell=document.querySelector('.cell[data-i="'+i+'"]');
+  if(!cell) return;
+  const it=cell.querySelector('.item');
+  if(it){ it.setAttribute('data-item',c.id); it.innerHTML=potIconHTML(c); }
+  const ring=cell.querySelector('.ring');
+  if(ring) ring.innerHTML=ringCircles(c);
+  else cell.insertAdjacentHTML('beforeend',potRing(c));
+}
+function tilt(i){ return ((i*37)%13)-6; }
+function costTag(i){
+  const c=state.cells[i];
+  const cost=(c.t==='weed')?10:30;
+  return '<div class="cost">🪙'+cost+'</div>';
+}
+function renderBoard(){
+  const b=$('#board'); b.innerHTML='';
+  for(let i=0;i<NCELL;i++){
+    const c=state.cells[i];
+    const d=document.createElement('div');
+    d.className='cell'; d.dataset.i=i;
+    if(c.t==='gen'){
+      if(c.covered){
+        d.classList.add('locked');
+        d.innerHTML='<div class="obs">'+SV(OBS.crate)+'</div><div class="icon" style="opacity:.55;position:absolute;inset:12%">'+SV(GENS[c.gen].icon)+'</div>'+(adjacentOpen(i)?costTag(i):'');
+      } else d.innerHTML='<div class="gen" data-gen="'+c.gen+'">'+SV(GENS[c.gen].icon)+'</div>';
+    } else if(c.t==='item'){
+      d.innerHTML='<div class="slot" style="transform:rotate('+tilt(i)+'deg)"><div class="item" data-item="'+c.id+'">'+potIconHTML(c)+'</div></div>'+potRing(c);
+    } else if(c.t==='crate'){
+      d.classList.add('locked');
+      d.innerHTML='<div class="obs">'+SV(OBS.crate)+'</div>'+(adjacentOpen(i)?costTag(i):'');
+    } else if(c.t==='weed'){
+      d.classList.add('locked');
+      d.innerHTML='<div class="obs">'+SV(OBS.weed)+'</div>'+(adjacentOpen(i)?costTag(i):'');
+    }
+    if(sel&&sel.kind==='board'&&sel.idx===i) d.classList.add('sel');
+    if(care&&care.idx===i) d.classList.add('caring');
+    b.appendChild(d);
+  }
+}
+function renderStash(){
+  const w=$('#benchChips'); w.innerHTML='';
+  if(state.clayBoxes>0){
+    const c=document.createElement('div');
+    c.className='chip mold'; c.dataset.mold='1';
+    c.innerHTML='<span class="mi">'+SV(MOLD_ICON)+'</span><span class="n">泥模 ×'+state.clayBoxes+'</span><i>开</i>';
+    w.appendChild(c);
+  }
+}
+function render(){ renderHud(); renderOrders(); renderBoard(); renderStash(); renderMascot(); updateGuide(); }
+
+/* ---------------- 棋盘几何 ---------------- */
+function idxOf(r,c){ return r*SIZE+c; }
+function isOpen(i){ const c=state.cells[i]; return c.t==='empty'||c.t==='item'||(c.t==='gen'&&!c.covered); }
+function adjacentOpen(i){
+  const r=Math.floor(i/SIZE),c=i%SIZE,nb=[];
+  if(r>0)nb.push(idxOf(r-1,c)); if(r<SIZE-1)nb.push(idxOf(r+1,c));
+  if(c>0)nb.push(idxOf(r,c-1)); if(c<SIZE-1)nb.push(idxOf(r,c+1));
+  return nb.some(isOpen);
+}
+function freeCellNear(i){
+  const seen=new Set([i]),q=[[i,0]];
+  while(q.length){
+    const cur=q.shift()[0], r=Math.floor(cur/SIZE),c=cur%SIZE,nb=[];
+    if(r>0)nb.push(idxOf(r-1,c)); if(r<SIZE-1)nb.push(idxOf(r+1,c));
+    if(c>0)nb.push(idxOf(r,c-1)); if(c<SIZE-1)nb.push(idxOf(r,c+1));
+    for(const n of nb){
+      if(seen.has(n))continue; seen.add(n);
+      if(state.cells[n].t==='empty') return n;
+      q.push([n,0]);
+    }
+  }
+  return -1;
+}
+
+/* ---------------- 操作 ---------------- */
+function produce(i){
+  const c=state.cells[i];
+  if(c.t!=='gen'||c.covered) return;
+  const out=GENS[c.gen].out();
+  const t=freeCellNear(i);
+  if(t<0){ toast('棋盘满了，先合并掉一些东西'); sfx('thud'); return; }
+  state.cells[t]={t:'item',id:out,patina:0,tare:0,charges:0,rubs:0};
+  noteFound(out);
+  noteCraft(out);
+  sfx('click'); render();
+  const cell=document.querySelector('.cell[data-i="'+t+'"] .item');
+  if(cell) cell.classList.add('pop');
+  floatText(t,ALL[out].name);
+  save();
+}
+function floatText(i,txt){
+  const cell=document.querySelector('.cell[data-i="'+i+'"]');
+  if(!cell) return;
+  const f=document.createElement('div'); f.className='float'; f.textContent=txt;
+  cell.appendChild(f); setTimeout(()=>f.remove(),1000);
+}
+function doMerge(targetIdx,outId){
+  const t=state.cells[targetIdx];
+  state.cells[targetIdx]={t:'item',id:outId,patina:0,tare:0,charges:0,rubs:0};
+  noteFound(outId);
+  noteCraft(outId);
+  const it=ALL[outId];
+  if(it.chain==='pot') sfx('ding');
+  else if(it.chain==='tea'||it.chain==='brew'||it.chain==='brew2') sfx('gurgle');
+  else sfx('chime');
+  if(it.chain==='tea'||it.chain==='brew'||it.chain==='brew2'){
+    if(state.teas.indexOf(outId)<0) state.teas.push(outId);
+  }
+  render();
+  const cell=document.querySelector('.cell[data-i="'+targetIdx+'"] .item');
+  if(cell){
+    cell.classList.add('pop');
+    const verb=(it.chain==='brew')?'萃出':((it.chain==='tea')?'煮出':((it.chain==='raw')?'沏出':''));
+    floatText(targetIdx, verb? verb+' '+it.name : it.name);
+  }
+  save();
+}
+function tryMerge(aIdx,bIdx){
+  const A=state.cells[aIdx],B=state.cells[bIdx];
+  if(!A||!B||A.t!=='item'||B.t!=='item'||aIdx===bIdx) return false;
+  const r=mergeResult(A.id,B.id);
+  if(!r){ toast('这两个合不到一块儿'); sfx('thud'); return false; }
+  if(r.err){ toast(r.err); sfx('thud'); return false; }
+  if(r.keepPot){
+    /* 煮茶不伤壶：只把茶那一格换成煮好的茶，壶原地不动 */
+    const aIsPot=!!(ALL[A.id]&&ALL[A.id].pot);
+    const teaIdx=aIsPot?bIdx:aIdx;
+    doMerge(teaIdx,r.id);
+    noteRecipe(A.id,B.id,r.id);
+    toast(r.id.indexOf('B_')===0?'用好壶萃出了特调茶':'煮好了');
+    return true;
+  }
+  state.cells[aIdx]={t:'empty'};
+  noteRecipe(A.id,B.id,r.id);
+  doMerge(bIdx,r.id);
+  return true;
+}
+
+/* ---------------- 养护（钥匙B） ---------------- */
+function isPotCell(i){ const c=state.cells[i]; return !!(c&&c.t==='item'&&ALL[c.id]&&ALL[c.id].pot); }
+/* 壶上的五件事，各走各的路，互不重叠：
+   烧 burn  = 拖生茶上壶（任何壶都烧得出一杯茶汤）
+   萃 steep = 拖茶汤上好壶（防锈以上）→ 萃出特调茶
+   灌 water = 拖茶汤上普通壶（素面）→ 给壶补茶水额度
+   擦 wash  = 拖草木灰上壶 → 碱洗
+   抹 rub   = 长按壶，用手指在壶上划 → 抹抹茶汁（长包浆）
+   「茶汤入壶」按壶的档位分两种：普通壶是灌水，好壶是萃。壶的档位写在图标上，
+   拖过去时壶上会亮出「灌」或「萃」，不用猜。 */
+const ACT_LABEL={burn:'烧茶',steep:'萃特调',water:'灌水',wash:'碱洗',rub:'抹抹茶汁'};
+function potAction(dragId,potIdx){
+  const c=state.cells[potIdx];
+  if(!c||c.t!=='item'||!isPotCell(potIdx)) return null;
+  const it=ALL[dragId];
+  if(!it) return null;
+  if(dragId==='草木灰') return 'wash';
+  if(it.chain==='raw') return 'burn';
+  if(it.chain==='tea') return potTier(c.id)>=3 ? 'steep' : 'water';
+  return null;
+}
+function enterCare(i){
+  const c=state.cells[i];
+  if(!isPotCell(i)) return;
+  if((c.patina||0)>=100){ toast('这把壶的包浆已经养满了'); return; }
+  if(!state.coach.pot){
+    state.coach.pot=true; save();
+    toast('在壶上划动 = 抹茶汁，每划一段长一点包浆');
+  }
+  care={idx:i,acc:0,lx:0,ly:0,pts:[]};
+  $('#trail').style.display='block';
+  showCareBar(i);
+  sfx('click');
+}
+function exitCare(){
+  care=null;
+  $('#trail').style.display='none';
+  $('#careBar').style.display='none';
+  render();
+}
+function showCareBar(i){
+  const c=state.cells[i];
+  const bar=$('#careBar'), cell=document.querySelector('.cell[data-i="'+i+'"]');
+  if(!cell){ bar.style.display='none'; return; }
+  const r=cell.getBoundingClientRect();
+  bar.style.display='block';
+  const next = c.id==='素面铁壶' ? '防锈铁壶' : (c.id==='防锈铁壶' ? '一本堂茶壶' : '已养成');
+  bar.innerHTML='<span class="cj">抹抹茶汁</span>包浆 '+Math.round(c.patina||0)+'/100 → '+next+' ｜ 浮灰 '+Math.round(c.tare||0)+' ｜ 茶水 '+(c.charges||0);
+  // 先写内容再摆位置：窄屏上别让这条顶出屏幕
+  const half=bar.offsetWidth/2+8;
+  const x=Math.max(half, Math.min(r.left+r.width/2, window.innerWidth-half));
+  bar.style.left=x+'px';
+  bar.style.top=Math.max(4,r.top-32)+'px';
+}
+let lastRubFloat=0;   // 抹抹茶汁的飘字节流
+function doRub(i){
+  const c=state.cells[i];
+  if(!isPotCell(i)) return false;
+  if((c.patina||0)>=100){ toast('包浆满了'); return false; }
+  if((c.charges||0)<=0){ toast('壶里没茶水了，拖一杯茶过来'); return false; }
+  c.charges--;
+  c.rubs=(c.rubs||0)+1;
+  if(state.tut&&state.tut.got){ state.tut.got.rub=1; renderMascot(); }   // 教程气泡当场跟进
+  const slow=(c.tare||0)>=40;
+  const eff=slow?15:25;
+  const bonus=(c.teaS==='mq')?2:((c.teaS==='yq')?1:0);
+  const gain=eff+bonus;
+  c.patina=Math.min(100,(c.patina||0)+gain);
+  c.aged=(c.aged||0)+gain;
+  c.tare=Math.min(100,(c.tare||0)+16);
+  if(Date.now()-lastRubFloat>320){ lastRubFloat=Date.now(); floatText(i,'抹茶汁 +'+gain); }
+  if(slow) toast('茶垢太厚，抹得慢了 — 先用草木灰擦一遍');
+  sfx('rub');
+  if(c.patina>=100) upgradePot(i);
+  else { refreshPot(i); showCareBar(i); }
+  save();
+  return true;
+}
+function upgradePot(i){
+  const c=state.cells[i];
+  const next = c.id==='素面铁壶' ? '防锈铁壶' : (c.id==='防锈铁壶' ? '一本堂茶壶' : null);
+  if(!next) return;
+  c.id=next; c.patina=0;
+  sfx('ding');
+  toast('养成了【'+next+'】！');
+  refreshPot(i);
+  save();
+}
+function waterPot(i,teaIdv){
+  const c=state.cells[i];
+  if(!isPotCell(i)) return false;
+  const t=ALL[teaIdv];
+  if(!t||t.chain!=='tea') return false;
+  const q=t.season==='mq'?2:(t.season==='yq'?1:0);
+  const add=4+q;
+  c.charges=(c.charges||0)+add;
+  if(state.tut&&state.tut.got) state.tut.got.potWater=1;
+  c.teaO=t.origin||null;
+  c.teaS=t.season||null;
+  floatText(i,'灌水 +'+add+' 次');
+  toast('灌入'+t.name+'，可抹 '+add+' 次');
+  sfx('gurgle');
+  render(); save();
+  return true;
+}
+function washPot(i){
+  const c=state.cells[i];
+  if(!isPotCell(i)) return false;
+  c.tare=Math.max(0,(c.tare||0)-60);
+  if(state.tut&&state.tut.got) state.tut.got.wash=1;
+  floatText(i,'碱洗 浮灰 −60');
+  sfx('thud');
+  toast('碱洗掉了浮灰（-60）');
+  render(); save();
+  return true;
+}
+function drawTrail(){
+  if(!care) return;
+  const pts=care.pts;
+  if(pts.length<2){ $('#trail').innerHTML=''; return; }
+  const d=pts.map((p,i)=>(i?'L':'M')+p.x+' '+p.y).join(' ');
+  $('#trail').innerHTML='<path d="'+d+'" fill="none" stroke="'+hsl(96,34,38)+'" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/>'+
+                      '<path d="'+d+'" fill="none" stroke="'+hsl(88,52,64)+'" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>'+
+                      '<path d="'+d+'" fill="none" stroke="'+hsl(72,70,86)+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>';
+}
+
+/* ---------------- 障碍 ---------------- */
+function clearObstacle(i){
+  const c=state.cells[i];
+  if(c.t!=='crate'&&c.t!=='weed'&&!(c.t==='gen'&&c.covered)) return;
+  if(!adjacentOpen(i)){ toast('要先清掉旁边的障碍，才挖得到这里'); hintNeighbours(i); sfx('thud'); return; }
+  const isWeed=c.t==='weed';
+  const cost=isWeed?9:26;
+  if(state.coins>=cost){ state.coins-=cost; toast('花 '+cost+' 铜钱清开了'+(isWeed?'杂草':'木箱')); }
+  else if(state.hammers>0){ state.hammers--; toast('用掉一把锤子敲开了'+(isWeed?'杂草':'木箱')); }
+  else { toast('铜钱不够（'+cost+'），先去交货赚点'); sfx('thud'); return; }
+  if(c.t==='gen') state.cells[i]={t:'gen',gen:c.gen,covered:false};
+  else { state.cells[i]={t:'empty'}; if(!isWeed) state.coins+=8; }
+  sfx('thud'); sfx('coin');
+  render(); save();
+}
+function hintNeighbours(i){
+  const r=Math.floor(i/SIZE),c=i%SIZE,nb=[];
+  if(r>0)nb.push(idxOf(r-1,c)); if(r<SIZE-1)nb.push(idxOf(r+1,c));
+  if(c>0)nb.push(idxOf(r,c-1)); if(c<SIZE-1)nb.push(idxOf(r,c+1));
+  nb.forEach(n=>{ const e=document.querySelector('.cell[data-i="'+n+'"]'); if(e)e.classList.add('hint'); });
+  setTimeout(()=>document.querySelectorAll('.cell.hint').forEach(x=>x.classList.remove('hint')),2600);
+}
+/* ---------------- 售壶处 ---------------- */
+const SELL_PRICE={'生铁壶胚':12,'素面铁壶':45,'防锈铁壶':140,'一本堂茶壶':460};
+function sellPrice(cell){
+  const it=ALL[cell.id];
+  if(!it||!it.pot) return 0;
+  let p=SELL_PRICE[cell.id]||20;
+  if(cell.id==='一本堂茶壶') p+=Math.round((cell.patina||0)*5);   // 包浆越厚越值钱
+  return p;
+}
+function sellPot(i){
+  const c=state.cells[i];
+  if(!c||c.t!=='item') return false;
+  const p=sellPrice(c);
+  if(!p){ toast('这个卖不上价，售壶处只收铁壶'); sfx('thud'); return false; }
+  const nm=ALL[c.id].name;
+  state.cells[i]={t:'empty'};
+  state.coins+=p;
+  toast('卖出「'+nm+'」，得 '+p+' 铜钱');
+  sfx('coin'); render(); save();
+  return true;
+}
+function recycle(i){
+  const c=state.cells[i];
+  if(c.t!=='item') return;
+  state.cells[i]={t:'empty'};
+  toast('清掉了（回收不换钱）'); sfx('thud'); render(); save();
+}
+
+/* ---------------- 订单 ---------------- */
+function progOf(npcId,key){ return state.progress[npcId][key]||0; }
+function orderComplete(npc){ return orderSlots(npc).every(s=>progOf(npc.id,s.key)>=1); }
+function placeSlot(npc,slot,itemId,meta){
+  state.progress[npc.id][slot.key]=(state.progress[npc.id][slot.key]||0)+1;
+  state.slotLog[npc.id].push(itemId);
+  state.slotItems[npc.id].push({key:slot.key,item:itemId});
+  const it=ALL[itemId];
+  if(it&&it.chain==='pot'){
+    const desc=makeTexture();
+    state.slotTex[npc.id].push({item:itemId,desc:desc});
+    state.codex.push({id:Date.now()+Math.random(),item:itemId,desc:desc,
+      rubs:(meta&&meta.rubs)||0, teaO:(meta&&meta.teaO)||null,
+      date:new Date().toLocaleDateString('zh-CN')});
+  }
+}
+function deliverItem(npcId,itemId,fromIdx){
+  const npc=npcById(npcId);
+  if(!npc||state.deliveries<npc.unlock) return false;
+  const slot=orderSlots(npc).filter(s=>slotMatches(s,itemId))[0];
+  if(!slot) return false;
+  if(progOf(npcId,slot.key)>=1) return false;
+  let potMeta=null;
+  if(fromIdx!=null){
+    const c=state.cells[fromIdx];
+    if(c.t!=='item'||c.id!==itemId) return false;
+    potMeta=c;
+    state.cells[fromIdx]={t:'empty'};
+  }
+  placeSlot(npc,slot,itemId,potMeta);
+  sfx('click'); render(); save();
+  if(orderComplete(npc)) completeOrder(npc);
+  return true;
+}
+function autoFill(npc){
+  const placed=[];
+  for(const s of orderSlots(npc)){
+    if(progOf(npc.id,s.key)>=1) continue;
+    for(let i=0;i<NCELL;i++){
+      const c=state.cells[i];
+      if(c.t==='item'&&slotMatches(s,c.id)){
+        const meta=c;
+        state.cells[i]={t:'empty'};
+        placeSlot(npc,s,c.id,meta); placed.push(c.id); break;
+      }
+    }
+  }
+  return placed;
+}
+function completeOrder(npc){
+  const delivered=state.slotLog[npc.id].slice();
+  const entries=state.slotTex[npc.id].slice();
+  const items=state.slotItems[npc.id].slice();
+  state.progress[npc.id]={}; state.slotTex[npc.id]=[]; state.slotLog[npc.id]=[]; state.slotItems[npc.id]=[];
+  state.deliveries++; state.served[npc.id]++;
+  if(state.tut&&state.tut.got){
+    state.tut.got.delivered=1;
+    if(npc.id==='scholar') state.tut.got.delivered2=1;
+    if(npc.id==='master') state.tut.got.delivered3=1;
+  }
+  // 三个订单交齐 = 通关（老掌柜那单是第三单）
+  const justCleared=(!state.cleared && state.deliveries>=3);
+  if(justCleared) state.cleared=true;
+  let bonus=0, praise=null;
+  for(const s of items){
+    if(s.key==='brew'&&npc.brew==='variant'){
+      const it=ALL[s.item];
+      if(it&&it.season===state.orders[npc.id].pref){
+        bonus=Math.round(npc.coins*0.45);
+        praise=(PRAISE[npc.id]&&PRAISE[npc.id][it.season])||null;
+      }
+    }
+  }
+  state.coins+=npc.coins+bonus;
+  state.diamonds+=npc.diamonds; state.hammers+=npc.hammers; state.parts+=npc.parts;
+  dropClay();
+  sfx('chime');
+  const unseen=TIPS.filter(t=>state.tipsSeen.indexOf(t.t)<0);
+  let tip;
+  if(unseen.length){ tip=unseen[Math.floor(Math.random()*unseen.length)]; state.tipsSeen.push(tip.t); }
+  else tip=TIPS[Math.floor(Math.random()*TIPS.length)];
+  render(); save();
+  showDelivery(npc,delivered,entries,tip,bonus,praise,justCleared);
+}
+function showDelivery(npc,delivered,entries,tip,bonus,praise,justCleared){
+  const line=npc.lines[Math.floor(Math.random()*npc.lines.length)];
+  const rewards=[];
+  if(npc.coins)rewards.push('<span>🪙 '+npc.coins+' 铜钱</span>');
+  if(bonus)rewards.push('<span class="bonus">🪙 +'+bonus+' 合口味</span>');
+  if(npc.diamonds)rewards.push('<span>💎 '+npc.diamonds+' 钻石</span>');
+  if(npc.hammers)rewards.push('<span>🔨 '+npc.hammers+' 锤子</span>');
+  if(npc.parts)rewards.push('<span>⚙️ '+npc.parts+' 特殊生成器部件</span>');
+  const texQ=entries.slice();
+  const cards=delivered.map(d=>{
+    const k=texQ.findIndex(x=>x.item===d);
+    const e=k>=0?texQ.splice(k,1)[0]:null;
+    const it=ALL[d];
+    return '<div class="d">'+iconHTML(d)+'<div><div class="nm">'+it.name+'</div>'+(e?'<div class="tx">'+e.desc+'</div>':'')+'</div></div>';
+  }).join('');
+  openSheet('交付',
+    '<div class="body">'+
+      '<div class="talk"><div class="av">'+npc.face+'</div><div class="bal">'+line+'</div></div>'+
+      (cards?'<div class="deliv">'+cards+'</div>':'')+
+      '<div class="rewards">'+rewards.join('')+'</div>'+
+      (praise?'<div class="praise" style="margin-top:8px">'+praise+'</div>':'')+
+      (npc.parts?'<div class="fact" style="margin-top:10px">获得 <b>特殊生成器部件</b>，可在「玩法」里兑换一台特殊生成器（直接产出顶级原料）。</div>':'')+
+      '<hr><div class="fact"><b>科普 · '+tip.t+'</b><br>'+tip.d+'</div>'+
+    '</div>',
+    justCleared
+      ? [{label:'听老掌柜说两句',cls:'',keep:true,fn:function(){ showClearSheet(); }}]
+      : [{label:'收下',cls:''}]);
+}
+function showClearSheet(){
+  sfx('chime');
+  openSheet('出师',
+    '<div class="body">'+
+      '<div class="talk"><div class="av">'+FACES.master+'</div><div class="bal">「三个单子都齐了。一把一本堂茶壶，两盏顶级香茗——大井巷这一间铺子，往后就交给你了。」</div></div>'+
+      '<div class="fact" style="margin-top:10px"><b>通关</b><br>摇扇大爷的一盏茶 → 长衫书生的一壶好茶 → 老掌柜的一把好壶。三个订单，这一间铺子的念想就齐了。</div>'+
+      '<div class="fact" style="margin-top:8px">往后客人还会再来，泥模照掉、錾纹照集，铺子也照开——不急，慢慢养。</div>'+
+    '</div>',
+    [{label:'继续经营',cls:''}]);
+}
+function rerollOrder(npcId){
+  if(state.diamonds<10){ toast('钻石不够（需 10）'); sfx('thud'); return; }
+  state.diamonds-=10;
+  const unlocked=Object.keys(ORIGINS).filter(k=>state.gardens[k]);
+  const o=unlocked[Math.floor(Math.random()*unlocked.length)];
+  const pref=['mq','yq','mq'][Math.floor(Math.random()*3)];
+  state.orders[npcId]={origin:o,pref:pref};
+  state.progress[npcId]={}; state.slotTex[npcId]=[]; state.slotLog[npcId]=[]; state.slotItems[npcId]=[];
+  sfx('coin'); render(); save();
+  toast(npcById(npcId).name+'换了个口味');
+}
+
+/* ---------------- 弹层 ---------------- */
+function openSheet(title,body,buttons){
+  const s=$('#sheet');
+  s.innerHTML='<h2>'+title+'</h2><div class="body">'+body+'</div>'+
+    '<div class="foot">'+buttons.map((b,i)=>'<button data-bi="'+i+'" class="'+(b.cls||'')+'">'+b.label+'</button>').join('')+'</div>';
+  $('#modal').classList.add('on');
+  s.querySelectorAll('.foot button').forEach(btn=>{
+    btn.onclick=()=>{ const b=buttons[+btn.dataset.bi]; if(b.fn)b.fn(); if(b.keep!==true)closeSheet(); };
+  });
+}
+function closeSheet(){ $('#modal').classList.remove('on'); }
+
+/* ---------------- 特殊部件 ---------------- */
+function openParts(){
+  const owned=state.cells.filter(c=>c.t==='gen'&&!c.covered).map(c=>c.gen);
+  const rows=SPECIALS.map(g=>{
+    const has=owned.indexOf(g)>=0;
+    return '<div class="garden"><span>'+SV(GENS[g].icon)+'</span><div class="g1"><b>'+g+'</b><div>直接产出「'+ALL[GENS[g].out()].name+'」'+(has?' · 已拥有':'')+'</div></div>'+
+      '<button data-buy="'+g+'"'+(has||state.parts<1?' disabled':'')+'>1 部件</button></div>';
+  }).join('');
+  openSheet('特殊生成器','<div class="body">你手上有 <b>'+state.parts+'</b> 个部件。特殊生成器直接产出顶级原料，是老掌柜的谢礼。<br><br>'+rows+'</div>',
+    [{label:'关闭',cls:'ghostbtn'}]);
+  $('#sheet').querySelectorAll('[data-buy]').forEach(b=>{
+    b.onclick=()=>{
+      const g=b.dataset.buy;
+      if(state.parts<1){ toast('部件不够'); return; }
+      if(state.cells.some(c=>c.t==='gen'&&c.gen===g&&!c.covered)){ toast('已经有了'); return; }
+      const t=freeCellNear(idxOf(2,2));
+      if(t<0){ toast('棋盘满了，放不下'); return; }
+      state.parts--; state.cells[t]={t:'gen',gen:g,covered:false};
+      sfx('chime'); render(); save(); closeSheet(); toast(g+' 已摆上摊子');
+    };
+  });
+}
+
+/* ---------------- 茶园 ---------------- */
+function openGardens(){
+  const rows=Object.keys(ORIGINS).map(k=>{
+    const o=ORIGINS[k], has=state.gardens[k];
+    const placed=state.cells.some(c=>c.t==='gen'&&c.gen===o.gen&&!c.covered);
+    return '<div class="garden"><span>'+SV(GENS[o.gen].icon)+'</span><div class="g1"><b>'+o.gen+'</b>'+
+      '<div>'+o.scent+' · '+o.note+'</div>'+
+      '<div style="margin-top:2px;color:var(--ink2)">产出 '+ALL[leafId(k,'cw')].name+' / '+ALL[leafId(k,'yq')].name+' / '+ALL[leafId(k,'mq')].name+'</div></div>'+
+      (has?'<button disabled>已开垦</button>':'<button data-garden="'+k+'">'+o.price+' 铜钱</button>')+
+      '</div>';
+  }).join('');
+  openSheet('茶园','<div class="body"><div style="font-size:12px;color:var(--ink3);margin-bottom:6px">店里做两种主茶：西湖龙井（绿茶，默认园）与九曲红梅（红茶，240 铜钱开一座红梅茶园）。不同茶种不可混制，客人只认自己那口。<br>当前铜钱 '+state.coins+'。</div>'+rows+'</div>',
+    [{label:'关闭',cls:'ghostbtn'}]);
+  $('#sheet').querySelectorAll('[data-garden]').forEach(b=>{
+    b.onclick=()=>{
+      const k=b.dataset.garden, o=ORIGINS[k];
+      if(state.coins<o.price){ toast('铜钱不够（需 '+o.price+'）'); sfx('thud'); return; }
+      const t=freeCellNear(idxOf(2,2));
+      if(t<0){ toast('棋盘满了，先腾出空位'); sfx('thud'); return; }
+      state.coins-=o.price;
+      state.gardens[k]=true;
+      state.cells[t]={t:'gen',gen:o.gen,covered:false};
+      sfx('chime'); render(); save(); closeSheet();
+      toast(o.gen+' 开垦好了');
+    };
+  });
+}
+function buyGarden(k){
+  const o=ORIGINS[k];
+  if(state.gardens[k]) return;
+  if(state.coins<o.price){ toast('铜钱不够（需 '+o.price+'）'); sfx('thud'); return; }
+  const t=freeCellNear(idxOf(2,2));
+  if(t<0){ toast('棋盘满了，先腾出空位'); return; }
+  state.coins-=o.price; state.gardens[k]=true;
+  state.cells[t]={t:'gen',gen:o.gen,covered:false};
+  sfx('chime'); render(); save(); closeSheet(); toast(o.gen+' 开垦好了');
+}
+
+/* ---------------- 泥模盲盒（纯收集，不参与数值） ---------------- */
+const SCENE_NAME={season:'西湖断桥残雪', ten:'三潭印月', craft:'茶室夜灯'};
+function sceneFx(setId){
+  if(setId==='season'){
+    let h='';
+    for(let k=0;k<34;k++){
+      const d=(4+Math.random()*7).toFixed(1), l=(5+Math.random()*7).toFixed(1), dl=(Math.random()*9).toFixed(1);
+      h+='<div class="flake" style="left:'+(Math.random()*100).toFixed(1)+'%;width:'+d+'px;height:'+d+'px;animation-duration:'+l+'s;animation-delay:-'+dl+'s"></div>';
+    }
+    return h;
+  }
+  if(setId==='ten') return '<div class="moon"></div><div class="water"></div>';
+  if(setId==='craft') return '<div class="lamp"></div><div class="lamp2"></div><div class="steam"></div>';
+  return '';
+}
+function applyScene(){
+  const el=$('#scene'); if(!el) return;
+  const done=Object.keys(SETS).filter(k=>state.scenes[k]);
+  const pick=done.length?done[done.length-1]:null;
+  el.className=pick?('on sc-'+pick):'';
+  el.innerHTML=pick?sceneFx(pick):'';
+}
+function openMold(){
+  if(state.clayBoxes<=0) return;
+  state.clayBoxes--;
+  const p=PATTERNS[Math.floor(Math.random()*PATTERNS.length)];
+  const isNew=!state.clay[p.id];
+  if(isNew) state.clay[p.id]={n:1,date:new Date().toLocaleDateString('zh-CN')};
+  else state.clay[p.id].n++;
+  const set=SETS[p.set];
+  const got=set.items.filter(id=>state.clay[id]).length;
+  let unlocked=false;
+  if(got>=set.items.length && !state.scenes[p.set]){ state.scenes[p.set]=true; unlocked=true; }
+  save(); render(); applyScene();
+  showReveal(p,isNew,set,got,unlocked);
+  sfx('ding');
+}
+function dropClay(){
+  const guaranteed=(state.deliveries%3===0);
+  if(guaranteed||Math.random()<0.35){
+    state.clayBoxes++;
+    setTimeout(()=>toast('有人送来一个神秘泥模！'),700);
+  }
+}
+function showReveal(p,isNew,set,got,unlocked){
+  openSheet(isNew?'新纹样':'又一款',
+    '<div class="body" style="text-align:center">'+
+      '<div class="reveal"><div class="mold" id="rvMold">'+SV(MOLD_ICON)+'</div>'+
+      '<div class="pot" id="rvPot">'+patternPotSVG(p.id)+'</div></div>'+
+      '<div class="rvname">'+p.name+'</div>'+
+      '<div class="rvline">'+p.line+'</div>'+
+      (isNew?'<div class="rvnew">新 纹 样</div>':'')+
+      '<div class="rvset">'+set.name+' '+got+'/'+set.items.length+(unlocked?' · 已解锁动态壁纸':'')+'</div>'+
+      (unlocked?'<div class="rvunlock">集齐【'+set.name+'】，铺子的背景已经换成《'+SCENE_NAME[p.set]+'》了。</div>':'')+
+    '</div>',
+    [{label:'收进图鉴',cls:''}]);
+  setTimeout(()=>{
+    const m=document.getElementById('rvMold'), q=document.getElementById('rvPot');
+    if(m) m.classList.add('crack');
+    if(q) setTimeout(()=>q.classList.add('show'),170);
+  },420);
+}
+function openWallpaper(setId){
+  const wp=$('#wallpaper');
+  if(!wp) return;
+  wp.className='on sc-'+setId;
+  wp.insertAdjacentHTML('afterbegin', sceneFx(setId));
+  $('#wpName').textContent=SCENE_NAME[setId];
+  const set=SETS[setId];
+  $('#wpSub').textContent='集齐「'+set.name+'」所得 · '+set.items.filter(id=>state.clay[id]).length+'/'+set.items.length;
+}
+function closeWallpaper(){
+  const wp=$('#wallpaper');
+  if(!wp) return;
+  wp.className='';
+  wp.querySelectorAll('.flake,.moon,.water,.lamp,.lamp2,.steam').forEach(n=>n.remove());
+}
+function clayCodexHTML(){
+  const gray='<path d="M14 20h20v15a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z" fill="#9a9a9a" opacity=".5"/><ellipse cx="24" cy="20" rx="10" ry="4" fill="#b3b3b3" opacity=".5"/><text x="24" y="34" font-size="15" text-anchor="middle" fill="#f4eee2" opacity=".85">?</text>';
+  let h='';
+  const unlocked=Object.keys(SETS).filter(k=>state.scenes[k]);
+  h+='<div class="pset"><div class="ph">动态壁纸<em>'+unlocked.length+'/'+Object.keys(SETS).length+'</em></div>';
+  if(!unlocked.length){
+    h+='<div class="empty" style="padding:12px 6px">还没解锁。<br>集齐「杭州四季」「西湖十景」或「铁壶錾纹」中的一整套，就能换一张动态壁纸。</div>';
+  } else {
+    h+='<div class="pgrid" style="grid-template-columns:repeat('+unlocked.length+',1fr)">';
+    unlocked.forEach(sid=>{
+      h+='<div class="pslot done" data-wp="'+sid+'" style="cursor:pointer"><div style="height:42px;border-radius:6px;background:linear-gradient(160deg,#4c637a,#2b3a4a);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;letter-spacing:1px">'+SCENE_NAME[sid]+'</div><div class="pn">点开查看</div></div>';
+    });
+    h+='</div>';
+  }
+  h+='</div>';
+  Object.keys(SETS).forEach(sid=>{
+    const s=SETS[sid];
+    const got=s.items.filter(id=>state.clay[id]).length;
+    h+='<div class="pset"><div class="ph">'+s.name+'<em>'+got+'/'+s.items.length+(state.scenes[sid]?' · 已解锁《'+SCENE_NAME[sid]+'》':'')+'</em></div><div class="pgrid">';
+    s.items.forEach(id=>{
+      const p=PAT_BY_ID[id], has=state.clay[id];
+      h+='<div class="pslot'+(has?' done':' lock')+'">'+
+         (has?patternPotSVG(id):SV(gray))+
+         '<div class="pn">'+(has?p.name:'未 开')+'</div>'+
+         (has&&state.clay[id].n>1?'<div class="pc">×'+state.clay[id].n+'</div>':'')+'</div>';
+    });
+    h+='</div></div>';
+  });
+  return h;
+}
+
+/* ---------------- 图鉴 / 科普 / 玩法 ---------------- */
+/* ---------------- 图鉴的「发现」记录：做出来一次就永久记住 ---------------- */
+function noteFound(id){
+  if(!state.found) state.found={};
+  if(!ALL[id]) return;
+  if(!state.found[id]) state.found[id]={n:0,date:new Date().toLocaleDateString('zh-CN')};
+  state.found[id].n++;
+}
+function recipeKey(a,b){
+  const A=ALL[a],B=ALL[b];
+  if(A&&B&&A.chain==='brew'&&B.chain==='brew') return '__brew2';   // 跨茶种拼配统一记一条
+  return [a,b].sort().join('|');
+}
+function noteRecipe(a,b,out){
+  if(!state.recipes) state.recipes={};
+  const k=recipeKey(a,b);
+  if(!state.recipes[k]) state.recipes[k]={a:a,b:b,out:out,date:new Date().toLocaleDateString('zh-CN')};
+}
+function allRecipes(){
+  const list=[];
+  RECIPE_PAIRS.forEach(function(p){ list.push({a:p[0][0],b:p[0][1],out:p[1],chain:'铁器线'}); });
+  Object.keys(ORIGINS).forEach(function(oid){
+    SEASON_ORDER.slice(0,-1).forEach(function(sid,si){
+      list.push({a:leafId(oid,sid),b:leafId(oid,sid),out:leafId(oid,SEASON_ORDER[si+1]),chain:'茶汤线'});
+    });
+    SEASON_ORDER.forEach(function(sid){
+      list.push({a:leafId(oid,sid),b:'净水',out:rawId(oid,sid),chain:'茶汤线'});
+      list.push({a:rawId(oid,sid),b:'素面铁壶',out:teaId(oid,sid),chain:'茶汤线'});
+      list.push({a:teaId(oid,sid),b:'防锈铁壶',out:brewId(oid,sid),chain:'特调'});
+    });
+  });
+  list.push({a:'B_lj_mq',b:'B_lj_mq',out:'顶级香茗',chain:'特调'});
+  list.push({a:'素面铁壶',b:'茶汤',out:'防锈铁壶',chain:'养护'});
+  list.push({a:'防锈铁壶',b:'茶汤',out:'一本堂茶壶',chain:'养护'});
+  return list;
+}
+function recipeCodexHTML(){
+  const list=allRecipes(), found=state.recipes||{};
+  const got=list.filter(function(r){ return !!found[recipeKey(r.a,r.b)]; }).length;
+  let h='<div class="sect">配方 '+got+'/'+list.length+'</div>';
+  ['铁器线','茶汤线','特调','养护'].forEach(function(ch){
+    const rows=list.filter(function(r){ return r.chain===ch; });
+    if(!rows.length) return;
+    h+='<div class="rsec">'+ch+'</div>';
+    rows.forEach(function(r){
+      const f=found[recipeKey(r.a,r.b)];
+      const na=ALL[r.a]?ALL[r.a].name:r.a, nb=ALL[r.b]?ALL[r.b].name:r.b, no=ALL[r.out]?ALL[r.out].name:r.out;
+      h+='<div class="rrow'+(f?' got':'')+'">'+
+        (f?('<span class="ri">'+na+'</span><i>＋</i><span class="ri">'+nb+'</span><i>＝</i><span class="ro">'+no+'</span>')
+           :('<span class="ri">? ?</span><i>＋</i><span class="ri">?</span><i>＝</i><span class="ro">?</span>'))+
+        (f?'<span class="rd">'+f.date+'</span>':'')+'</div>';
+    });
+  });
+  return h;
+}
+
+/* ---------------- 统一图鉴（四个页签，条目全部补齐，未解锁显示剪影） ---------------- */
+const SIL_MOLD='<path d="M14 20h20v15a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z" fill="#9a9a9a" opacity=".45"/><ellipse cx="24" cy="20" rx="10" ry="4" fill="#b3b3b3" opacity=".45"/>';
+function codexTabs(){
+  const t=state.codexTab||'tex';
+  const defs=[['tex','纹样'],['rec','配方'],['pot','壶谱'],['tea','茶谱']];
+  return '<div class="cxtabs">'+defs.map(function(d){
+    return '<button data-cxtab="'+d[0]+'" class="'+(t===d[0]?'on':'')+'">'+d[1]+'</button>';
+  }).join('')+'</div>';
+}
+function potCodexHTML(){
+  const tiers=['生铁壶胚','素面铁壶','防锈铁壶','一本堂茶壶'];
+  let h='<div class="sect">壶型（做出来过就点亮）</div><div class="pgrid">';
+  tiers.forEach(function(id){
+    const recs=state.codex.filter(function(e){return e.item===id;});
+    const f=state.found[id];
+    const known=!!f||recs.length>0;
+    h+='<div class="pslot'+(known?' done':' lock')+'">'+
+       (known?SV(ALL[id].icon):SV(SIL_MOLD))+
+       '<div class="pn">'+id+'</div>'+
+       (f&&f.n>1?'<div class="pc">×'+f.n+'</div>':'')+'</div>';
+  });
+  h+='</div><div class="sect">养壶履历</div>';
+  const list=state.codex.slice().reverse();
+  h+= list.length? list.map(function(e){
+    const o=e.teaO?ORIGINS[e.teaO]:null;
+    return '<div class="entry"><span>'+iconHTML(e.item)+'</span><div class="t"><b>'+ALL[e.item].name+'</b>'+
+      '<div class="sub">'+e.date+' · 抹 '+e.rubs+' 次'+(o?' · 用 '+o.name+'茶养':'')+'</div>'+e.desc+'</div></div>';
+  }).join('') : '<div class="empty">壶谱还空着。<br>养出一把铁壶，交给客人，它就会留下一段肌理描述。</div>';
+  return h;
+}
+function teaCodexHTML(){
+  const ids=[];
+  Object.keys(ORIGINS).forEach(function(oid){
+    SEASON_ORDER.forEach(function(sid){
+      ids.push(leafId(oid,sid));
+      ids.push(rawId(oid,sid));
+      ids.push(teaId(oid,sid));
+      ids.push(brewId(oid,sid));
+    });
+  });
+  ids.push('顶级香茗');
+  let h='<div class="sect">茶叶 · 生茶 · 茶汤 · 特调（做出来过就点亮）</div><div class="pgrid">';
+  ids.forEach(function(id){
+    const it=ALL[id]; if(!it) return;
+    const f=state.found[id];
+    const known=!!f;
+    h+='<div class="pslot'+(known?' done':' lock')+'">'+
+       (known?SV(it.icon):SV(SIL_MOLD))+
+       '<div class="pn">'+(known?it.name:'? ? ?')+'</div>'+
+       (f&&f.n>1?'<div class="pc">×'+f.n+'</div>':'')+'</div>';
+  });
+  h+='</div><div class="sect">茶品单</div>';
+  const brews=[['西湖龙井','85°C 绿茶'],['九曲红梅','100°C 红茶']];
+  h+='<div class="entry"><span>'+SV(cup('#b8863a','#8f6524'))+'</span><div class="t">'+
+     brews.map(function(b){ return b[0]+'（'+b[1]+'）'; }).join('　')+'</div></div>';
+  h+='<div style="font-size:11px;color:var(--ink3);line-height:1.6;margin-top:4px">绿茶要降到 85°C 才不伤鲜灵；红茶忌久闷，滚水快出。</div>';
+  return h;
+}
+function openCodex(){
+  const tab=state.codexTab||'tex';
+  let body='';
+  if(tab==='pot') body=potCodexHTML();
+  else if(tab==='tea') body=teaCodexHTML();
+  else if(tab==='rec') body=recipeCodexHTML();
+  else body=clayCodexHTML();
+  openSheet('图鉴','<div class="body">'+codexTabs()+body+'</div>',[{label:'关闭',cls:'ghostbtn'}]);
+  $('#sheet').querySelectorAll('[data-cxtab]').forEach(function(el){
+    el.onclick=function(){ state.codexTab=el.dataset.cxtab; openCodex(); };
+  });
+  $('#sheet').querySelectorAll('[data-wp]').forEach(function(el){
+    el.onclick=function(){ closeSheet(); openWallpaper(el.dataset.wp); };
+  });
+}
+function openTips(){
+  const body=TIPS.map((t,i)=>'<div class="tip"><span class="n">'+(state.tipsSeen.indexOf(t.t)>=0?'✓':'○')+'</span><div><b>'+t.t+'</b><br>'+
+    (state.tipsSeen.indexOf(t.t)>=0?t.d:'（交付订单后解锁）')+'</div></div>').join('');
+  openSheet('铁与茶的科普','<div class="body">'+body+'</div>',[{label:'关闭',cls:'ghostbtn'}]);
+}
+function openHelp(){
+  openSheet('怎么玩','<div class="body">'+
+    '<div class="fact"><b>① 点生成器</b><br>点茶园、铁矿堆、泥料坑、水缸出原料。两个同级原料拖到一起升级一级。茶园按茶种分：西湖龙井清香、九曲红梅花果香。</div>'+
+    '<div class="fact" style="margin-top:8px"><b>② 铁壶要自己做</b><br>铁矿堆出<b>精铁矿</b>、泥料坑出<b>坚固泥模</b>，两样合出<b>壶胚</b>；<b>两只壶胚</b>合成<b>素面铁壶</b>。再养护两阶，就是<b>防锈铁壶</b>和最高级的<b>一本堂茶壶</b>。</div>'+
+    '<div class="fact" style="margin-top:8px"><b>③ 茶要用壶烧</b><br>茶叶加净水只是<b>生茶</b>，生茶不能交单——<b>把生茶拖到铁壶上</b>就是<b>烧茶</b>（壶上会亮出「烧」字），烧出一杯<b>茶汤</b>。<b>壶不会坏，烧完还在</b>。把茶汤再拖到<b>防锈以上的好壶</b>上（壶上亮「萃」字）就萃出<b>特调茶</b>；两杯特调拼一起是<b>顶级香茗</b>。</div>'+
+    '<div class="fact" style="margin-top:8px"><b>③半 顶级香茗怎么来</b><br><b>生茶</b>拖到<b>素面铁壶</b>上烧成<b>茶汤</b>（标「烧」）→ 茶汤拖到<b>防锈以上的好壶</b>上萃成<b>特调</b>（标「萃」）→ <b>两杯特调拖到一起</b>＝<b>顶级香茗</b>。长衫书生和老掌柜这两单都要顶级香茗，所以特调至少得萃两杯；一把好壶能连萃两杯，壶不会坏。</div>'+
+    '<div class="fact" style="margin-top:8px"><b>④ 养护铁壶：抹抹茶汁</b><br><b>长按</b>铁壶进入养护——壶上会亮起一圈绿光、贴一个「抹」字，这时手指在壶上划动就是<b>抹抹茶汁</b>，包浆一格格涨，满 100 升一阶。<br><b>灌水</b>是把一杯<b>茶汤</b>拖到壶上（壶上标「灌」）：春尾给 4 次额度、雨前 5 次、明前 6 次；抹的时候明前每次多长 2 包浆。额度用完了要再拖一杯茶汤上去续水。</div>'+
+    '<div class="fact" style="margin-top:8px"><b>⑤ 碱洗与草木灰炉</b><br>茶垢积到 40 就抹得慢了（每次只涨 15 点包浆），要把棋盘上的<b>草木灰</b>拖到壶上碱洗（壶上标「擦」，浮灰 −60）。草木灰不再白送——外围有台<b>草木灰炉</b>，花铜钱把上头的木箱清开就能用。</div>'+
+    '<div class="fact" style="margin-top:8px"><b>⑥ 交货</b><br>客人认<b>茶种</b>，也偏好<b>时节</b>（明前 &gt; 雨前 &gt; 春尾）。合口味多给钱，还附一句品评。摇扇大爷的第一单是<b>教学单</b>，只要一盏茶汤。<b>三个订单就是通关</b>：大爷 → 书生 → 老掌柜，一单一单交齐了，这一间铺子就算立住了。</div>'+
+    '<div class="fact" style="margin-top:8px"><b>⑦ 扩张</b><br>拆木箱杂草腾地方（木箱 36 / 杂草 12）。铜钱可以开新茶园（红梅园 240）。老掌柜的部件可换特殊生成器。</div>'+
+    '<div class="fact" style="margin-top:8px"><b>⑧ 泥模盲盒</b><br>交完单子，有人会送来<b>神秘泥模</b>，在<b>杂物台</b>上点开，能开出带錾纹的铁壶——苏堤春晓、曲院荷风、满陇桂雨、断桥残雪……<b>纯粹是收集，不参与数值</b>。集齐一套「杭州四季」，铺子的背景就换成《西湖断桥残雪》。</div>'+
+    '<div class="fact" style="margin-top:8px"><b>⑨ 回收与卖壶</b><br><b>回收筐</b>只腾位置，<b>不换钱</b>；卖壶要拖到<b>售壶处</b>去——生铁壶胚 12、素面铁壶 45、防锈铁壶 140、一本堂茶壶 460（包浆度每点再加 5）。</div>'+
+    '<div style="margin-top:10px;font-size:12px;color:var(--ink3)">提示：找不到空位时，先把两样东西合并；壶上的茶垢太厚，先用草木灰擦一遍再抹。</div>'+
+    '</div>',[{label:'开始',cls:''}]);
+}
+
+/* ---------------- 拖拽 ---------------- */
+const ghostEl=$('#ghost');
+function makeGhost(id,rot){
+  ghostEl.innerHTML=iconHTML(id);
+  ghostEl.style.transform='translate(-50%,-50%) scale(1.18) rotate('+(rot||0)+'deg)';
+  ghostEl.style.display='block';
+}
+function moveGhost(x,y){ ghostEl.style.left=x+'px'; ghostEl.style.top=y+'px'; }
+
+function onPointerDown(e){
+  Snd.boot();
+  const chip=e.target.closest('.chip');
+  const itemEl=e.target.closest('.item');
+  const genEl=e.target.closest('.gen');
+  const obsEl=e.target.closest('.obs');
+  const cellEl=e.target.closest('.cell');
+  if(!cellEl&&!chip) return;
+  const idx=cellEl?+cellEl.dataset.i:null;
+  if(e.target.closest('.chip.mold')) return;   // 泥模只响应点击
+  if(genEl){ produce(idx); return; }
+  let payload=null;
+  if(chip&&chip.dataset.mold) return;          // 泥模芯片只点不拖
+  if(chip){ return; }                          // 杂物台上没有可拖的东西了
+  else if(itemEl){ payload={kind:'board',idx:idx}; makeGhost(state.cells[idx].id,tilt(idx));
+    showDragLabel(dragNameFor(state.cells[idx])); }
+  else if(obsEl){ payload=null; }
+  else return;
+  drag={payload:payload,sx:e.clientX,sy:e.clientY,moved:false,care:false};
+  // 铁壶：长按进入养护模式
+  if(payload&&payload.kind==='board'&&isPotCell(idx)){
+    pressTimer=setTimeout(()=>{
+      pressTimer=null;
+      if(drag&&!drag.moved){ drag.care=true; drag.payload=null; ghostEl.style.display='none'; enterCare(idx); }
+    },320);
+  }
+  try{ e.target.setPointerCapture&&e.target.setPointerCapture(e.pointerId); }catch(err){}
+  e.preventDefault();
+}
+function onPointerMove(e){
+  if(!drag) return;
+  const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
+  if(!drag.moved&&Math.abs(dx)+Math.abs(dy)<10) return;
+  drag.moved=true;
+  if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; }
+  if(drag.care){ careMove(e); return; }
+  if(!drag.payload) return;
+  if(!guideBusy){ guideBusy=true; updateGuide(); }   // 开始拖了，光标先让位
+  moveGhost(e.clientX,e.clientY);
+  moveDragLabel(e.clientX,e.clientY);
+  const t=document.elementFromPoint(e.clientX,e.clientY);
+  document.querySelectorAll('.cell.under').forEach(x=>x.classList.remove('under'));
+  document.querySelectorAll('.cell.act-burn,.cell.act-steep,.cell.act-water,.cell.act-wash')
+    .forEach(x=>x.classList.remove('act-burn','act-steep','act-water','act-wash'));
+  $('#recycle').classList.toggle('hot',!!(t&&t.closest('#recycle')));
+  $('#sell').classList.toggle('hot',!!(t&&t.closest('#sell')));
+  let hoverAct=null;
+  if(t){
+    const cell=t.closest('.cell');
+    if(cell){
+      const ti=+cell.dataset.i;
+      hoverAct=(drag.payload.kind==='board')?potAction(state.cells[drag.payload.idx].id,ti):null;
+      if(hoverAct) cell.classList.add('act-'+hoverAct);
+      else cell.classList.add('under');
+    }
+  }
+  updateDragLabel(hoverAct);
+}
+function careMove(e){
+  if(!care) return;
+  const i=care.idx;
+  const cell=document.querySelector('.cell[data-i="'+i+'"]');
+  if(!cell) return;
+  const r=cell.getBoundingClientRect();
+  const inside = e.clientX>=r.left-6&&e.clientX<=r.right+6&&e.clientY>=r.top-6&&e.clientY<=r.bottom+6;
+  if(!inside){ care.pts=[]; drawTrail(); return; }
+  const pt={x:e.clientX,y:e.clientY};
+  if(care.lx||care.ly){
+    const d=Math.hypot(e.clientX-care.lx, e.clientY-care.ly);
+    care.acc+=d;
+    care.pts.push(pt);
+    if(care.pts.length>26) care.pts.shift();
+    drawTrail();
+    while(care.acc>=RUB_STEP){ care.acc-=RUB_STEP; if(!doRub(i)) break; }
+  }
+  care.lx=e.clientX; care.ly=e.clientY;
+}
+function onPointerUp(e){
+  if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; }
+  if(!drag) return;
+  const d=drag; drag=null;
+  ghostEl.style.display='none';
+  hideDragLabel();
+  setTimeout(function(){ guideBusy=false; updateGuide(); },0);   // 松手后光标回来
+  $('#recycle').classList.remove('hot');
+  $('#sell').classList.remove('hot');
+  document.querySelectorAll('.cell.under').forEach(x=>x.classList.remove('under'));
+  if(d.care){ exitCare(); return; }
+  if(!d.moved){ handleTap(e); return; }
+  if(!d.payload) return;
+  const t=document.elementFromPoint(e.clientX,e.clientY);
+  if(!t) return;
+  if(t.closest('#recycle')){ if(d.payload.kind==='board') recycle(d.payload.idx); lastDropAt=Date.now(); return; }
+  if(t.closest('#sell')){ if(d.payload.kind==='board') sellPot(d.payload.idx); lastDropAt=Date.now(); return; }
+  const npcEl=t.closest('[data-npc]');
+  if(npcEl){
+    const nid=npcEl.dataset.npc;
+    if(d.payload.kind==='board'){
+      const id=state.cells[d.payload.idx].id;
+      if(!deliverItem(nid,id,d.payload.idx)) toast('这位客人不要这个');
+    } else toast('这个不能拖到那儿');
+    return;
+  }
+  const cell=t.closest('.cell');
+  if(!cell) return;
+  const ti=+cell.dataset.i;
+  if(d.payload.kind==='board'){
+    if(ti===d.payload.idx) return;
+    const A=state.cells[d.payload.idx], B=state.cells[ti];
+    if(B.t==='item'){
+      const act=potAction(A.id,ti);
+      if(act==='water'){                       // 茶汤 → 普通铁壶 = 灌水
+        state.cells[d.payload.idx]={t:'empty'};
+        waterPot(ti,A.id); return;
+      }
+      if(act==='wash'){                        // 棋盘上的草木灰 → 铁壶 = 碱洗
+        state.cells[d.payload.idx]={t:'empty'};
+        washPot(ti); return;
+      }
+      tryMerge(d.payload.idx,ti);
+    }
+    else if(B.t==='empty'){ state.cells[ti]=A; state.cells[d.payload.idx]={t:'empty'}; sfx('click'); render(); save(); }
+    else if(B.t==='gen'&&!B.covered) toast('生成器占着位置');
+    else toast('先把障碍清掉');
+  }
+}
+function handleTap(e){
+  const moldEl=e.target.closest('.chip.mold');
+  if(moldEl){ openMold(); return; }
+  const chip=e.target.closest('.chip');
+  const itemEl=e.target.closest('.item');
+  const obsEl=e.target.closest('.obs');
+  const cellEl=e.target.closest('.cell');
+  if(chip){ return; }
+  if(obsEl){ clearObstacle(+cellEl.dataset.i); return; }
+  if(itemEl){
+    const idx=+cellEl.dataset.i;
+    if(sel&&sel.kind==='board'&&sel.idx!==idx){
+      const act=potAction(state.cells[sel.idx].id,idx);
+      if(act==='water'){                       // 点选也要能灌水
+        const id=state.cells[sel.idx].id;
+        state.cells[sel.idx]={t:'empty'};
+        sel=null; waterPot(idx,id); render(); save(); return;
+      }
+      if(act==='wash'){                        // 点选也要能碱洗
+        state.cells[sel.idx]={t:'empty'};
+        sel=null; washPot(idx); render(); save(); return;
+      }
+      if(tryMerge(sel.idx,idx)){ sel=null; render(); return; }
+    }
+    if(sel&&sel.kind==='board'&&sel.idx===idx){ sel=null; render(); return; }
+    sel={kind:'board',idx:idx};
+    render(); return;
+  }
+  if(cellEl&&sel){
+    const idx=+cellEl.dataset.i, c=state.cells[idx];
+    if(c.t==='empty'){
+      if(sel.kind==='board'){ state.cells[idx]=state.cells[sel.idx]; state.cells[sel.idx]={t:'empty'}; }
+      sel=null; sfx('click'); render(); save(); return;
+    }
+  }
+  sel=null; render();
+}
+
+/* ---------------- 订单交互 ---------------- */
+$('#orders').addEventListener('click',e=>{
+  const buy2=e.target.closest('[data-buy2]');
+  if(buy2){ buyGarden(buy2.dataset.buy2); return; }
+  const btn=e.target.closest('[data-act]');
+  if(!btn) return;
+  const card=e.target.closest('[data-npc]');
+  if(!card) return;
+  const nid=card.dataset.npc, npc=npcById(nid);
+  if(btn.dataset.act==='give'){
+    if(state.deliveries<npc.unlock) return;
+    const placed=autoFill(npc);
+    if(placed.length){ sfx('click'); render(); save(); }
+    if(orderComplete(npc)){ completeOrder(npc); return; }
+    const miss=orderSlots(npc).filter(s=>progOf(nid,s.key)<1).map(s=>s.label);
+    toast('还差：'+miss.join('、'));
+    sfx('thud');
+  } else if(btn.dataset.act==='reroll') rerollOrder(nid);
+});
+
+/* ---------------- 底部工具 ---------------- */
+$('#btnCodex').onclick=openCodex;
+$('#btnGarden').onclick=openGardens;
+$('#btnTips').onclick=openTips;
+$('#btnHelp').onclick=openHelp;
+$('#mascotBoy').onclick=openHelp;
+$('#wpClose').onclick=closeWallpaper;
+$('#sell').onclick=function(){
+  if(Date.now()-lastDropAt<700) return;
+  toast('售壶处：把养好的铁壶拖过来，就能换成铜钱');
+};
+$('#btnSound').onclick=()=>{ state.sound=!state.sound; if(state.sound){Snd.boot(); sfx('click');} render(); save(); };
+$('#btnReset').onclick=()=>{
+  openSheet('重开一局？','<div class="body">当前进度会全部清空，棋盘回到最初的样子。</div>',
+    [{label:'确定重开',cls:'',fn:()=>{ state=newState(); sel=null; render(); save(); toast('新的一炉，开张'); }},
+     {label:'算了',cls:'ghostbtn'}]);
+};
+
+/* ---------------- 事件 ---------------- */
+document.addEventListener('pointerdown',onPointerDown,{passive:false});
+document.addEventListener('pointermove',onPointerMove,{passive:true});
+document.addEventListener('pointerup',onPointerUp);
+document.addEventListener('pointercancel',()=>{ if(pressTimer){clearTimeout(pressTimer);pressTimer=null;} drag=null; ghostEl.style.display='none'; hideDragLabel(); guideBusy=false; updateGuide(); if(care)exitCare(); });
+document.addEventListener('contextmenu',e=>{ if(e.target.closest('.cell,.chip')) e.preventDefault(); });
+
+/* ---------------- 启动 ---------------- */
+state=load();
+if(!state){ state=newState(); save(); }
+render();
+applyScene();
+if(!state.intro){ state.intro=true; save(); openHelp(); }
+maybeRotateTip();
+const rtBtn=document.getElementById('rtClose');
+if(rtBtn) rtBtn.onclick=closeRotateTip;
+window.addEventListener('resize',maybeRotateTip);
+window.addEventListener('orientationchange',()=>{ setTimeout(maybeRotateTip,120); });
+</script>
+</body>
+</html>
