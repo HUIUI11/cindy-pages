@@ -141,9 +141,10 @@ body{
 .cell .obs svg{width:100%;height:100%;display:block}
 .cell.under{filter:brightness(.72)}
 .cell.sel{outline:2px solid var(--gold);outline-offset:-2px}
-.cell.caring{outline:2px solid #4f7a4a;outline-offset:-2px;
-  box-shadow:inset 0 0 0 999px rgba(79,122,74,.15);animation:careGlow 1.3s ease-in-out infinite}
-@keyframes careGlow{50%{box-shadow:inset 0 0 0 999px rgba(79,122,74,.04)}}
+.cell.caring{outline:2px solid var(--juice,#4f7a4a);outline-offset:-2px;
+  box-shadow:inset 0 0 26px var(--juice,#4f7a4a),0 0 0 3px rgba(255,255,255,.20);
+  animation:careGlow 1.3s ease-in-out infinite}
+@keyframes careGlow{50%{box-shadow:inset 0 0 38px var(--juice,#4f7a4a),0 0 0 4px rgba(255,255,255,.34)}}
 /* 壶上动作标记：拖东西经过时亮出「烧 / 灌 / 擦」，长按养护时亮出「抹」 */
 .cell.act-burn{outline:2px solid #c9602c;outline-offset:-2px;box-shadow:inset 0 0 0 999px rgba(201,96,44,.17)}
 .cell.act-steep{outline:2px solid #b78a1e;outline-offset:-2px;box-shadow:inset 0 0 0 999px rgba(183,138,30,.17)}
@@ -741,6 +742,14 @@ const MOLD_ICON='<path d="M14 20h20v15a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z" fill="#a
   '<path d="M20 26c2.6 1.4 5.4 1.4 8 0M20 31c2.6 1.4 5.4 1.4 8 0" stroke="#7a5c48" stroke-width="1.2" fill="none" opacity=".55"/>'+
   '<rect x="21" y="27.5" width="6" height="7" rx="1" fill="#b4553f" opacity=".92"/><path d="M22.6 30h2.8M22.6 32h2.8" stroke="#f2e3cf" stroke-width="1" opacity=".8"/>';
 
+/* 茶汁的颜色：顶级香茗是金色，其余取那杯茶自己的颜色（提亮一点，看得清） */
+function juiceColor(t){
+  if(!t) return '#d8b455';
+  if(t.chain==='brew2') return '#e8c46a';
+  const o=ORIGINS[t.origin], sn=SEASONS[t.season]||SEASONS.cw;
+  if(!o) return '#c8a35a';
+  return hsl(o.teaH,Math.min(85,o.teaS+10),Math.min(62,(o.teaL+(sn.tdl||0))+8));
+}
 function potIconHTML(cell){
   const st=POT_STYLE[cell.id];
   if(!st) return iconHTML(cell.id);
@@ -748,7 +757,27 @@ function potIconHTML(cell){
   const c1=mixHex(st.c1,'#6b4a2e',t*0.62);
   const c2=mixHex(st.c2,'#452c1c',t*0.62);
   const acc=mixHex(st.acc,'#f0c98d',t*0.55);
-  return SV(st.draw(c1,c2,acc,st.extra));
+  let out=SV(st.draw(c1,c2,acc,st.extra));
+  // 茶汁痕：抹过的壶上留一层亮亮的汁，抹一次厚一分
+  const jn=cell.juiceN||0;
+  if(jn>0){
+    const jc=cell.juice||'#d8b455';
+    const jt=Math.min(0.6,0.2+jn*0.05);
+    // 壶身外的柔光：一眼看见「这只壶抹过」
+    out+='<circle cx="24" cy="30" r="18" fill="'+jc+'" opacity="'+(jt*0.30).toFixed(2)+'"/>';
+    // 肩上那道湿亮的茶汁痕
+    out+='<path d="M14.6 29.4c3.4-4.4 15.4-5.2 19.8-.6" fill="none" stroke="'+jc+'" stroke-width="3.2" stroke-linecap="round" opacity="'+(jt*0.9).toFixed(2)+'"/>';
+    out+='<path d="M15.4 28.4c3.2-3.6 14.4-4.4 18.4-.6" fill="none" stroke="#fff3d6" stroke-width="1.3" stroke-linecap="round" opacity="'+(jt*0.75).toFixed(2)+'"/>';
+    // 汁珠
+    out+='<ellipse cx="19.4" cy="27" rx="2.6" ry="1.8" fill="'+jc+'" opacity=".9"/>';
+    out+='<circle cx="29.4" cy="33.8" r="1.7" fill="'+jc+'" opacity=".75"/>';
+    out+='<circle cx="25.8" cy="25.2" r="1" fill="'+jc+'" opacity=".7"/>';
+  }
+  // 润泽：包浆越多，壶身越有光（一本堂茶壶底色本来就偏棕，靠这个才看得出养过）
+  const sheen=Math.min(0.55,t*0.75);
+  if(sheen>0.04)
+    out+='<path d="M14.6 29.6c3.4-4.2 15.4-5 19.8-.6" fill="none" stroke="'+mixHex(st.acc,'#fff4dc',0.55)+'" stroke-width="2.4" stroke-linecap="round" opacity="'+sheen.toFixed(2)+'"/>';
+  return out;
 }
 const ALL = Object.assign({}, STATIC_ITEMS);
 Object.keys(STATIC_ITEMS).forEach(k=>{ if(!STATIC_ITEMS[k].name) STATIC_ITEMS[k].name=k; });
@@ -1141,7 +1170,7 @@ const TUT_STEPS=[
    sel:function(){ return firstItemWhere(function(it){ return it.chain==='pot'&&it.tier>=2; }); }},
   {id:'deliver', text:'把茶<b>拖到摇扇大爷的头像上</b>（或者点卡片上的「交付」），把这单交掉。', got:'delivered',
    sel:function(){ return document.querySelector('[data-npc="fan"]'); }},
-  {id:'care',    text:'壶要养：先做一杯<b>茶汤</b>拖到壶上（标「灌」）补额度，再<b>长按</b>铁壶、手指在壶上划一划抹<b>抹茶汁</b>，包浆满了升一阶（壶上会亮「抹」字）。', got:'rub',
+  {id:'care',    text:'壶要养：先做一杯<b>茶汤</b>拖到壶上（标「灌」）补额度，再<b>长按</b>铁壶、手指在壶上划一划——就是把<b>茶汁抹上去</b>，壶身会留下亮亮的汁痕，抹满 100 升一阶。手上有<b>顶级香茗</b>就拖到壶上：抹出来是<b>金色的</b>，包浆涨得最快（顶级香茗不消耗，交单还够用）。', got:'rub',
    sel:function(){ return firstItemWhere(function(it){ return it.chain==='pot'; }); }},
   {id:'ash',     text:'茶垢厚了抹不动，就要<b>草木灰</b>碱洗：棋盘角落那台<b>草木灰炉</b>，花 36 铜钱清开木箱就能用，产出草木灰；把它拖到壶上（壶上标「擦」），浮灰 −60。', got:'ash',
    sel:function(){ return document.querySelector('.cell[data-i="8"] .gen, .cell[data-i="8"] .obs'); }},
@@ -1233,7 +1262,9 @@ function mascotHint(){
   const pot=pots[0];
   if(pot&&(pot.tare||0)>=40) return '茶垢太厚，抹不动了。把<b>草木灰</b>拖到壶上擦一擦。';
   if(pot&&(pot.charges||0)<=0&&(pot.patina||0)<100) return '壶里没茶水了。做一杯<b>茶汤</b>拖到壶上，给它灌一次水。';
-  if(pot&&!state.coach.pot) return '这铁壶还没开过呢。<b>长按</b>它，然后在壶上划一划——那就是抹茶汁。';
+  if(pot&&!state.coach.pot) return '这铁壶还没开过呢。<b>长按</b>它，然后在壶上划一划——那就是把茶汁抹上去，壶身会留下亮亮的汁痕。';
+  if(pot&&(pot.charges||0)<=0&&state.cells.some(c=>c.t==='item'&&c.id==='顶级香茗'))
+    return '手上有<b>顶级香茗</b>？拖到壶上就是最好的茶汁——抹出来是<b>金色的</b>，包浆涨得最快（它不消耗，交单还够用）。';
   if(state.cells.some(c=>c.t==='item'&&c.id==='一本堂茶壶')) return '包浆养出来了！这样的壶交上去，价钱是不一样的。';
   // 钱不够扩地了：提醒卖壶 / 回收，别卡在这儿
   if(state.coins<26 && state.cells.some(c=>c.t==='item'&&ALL[c.id]&&ALL[c.id].pot))
@@ -1365,6 +1396,7 @@ function refreshPot(i){
   if(!cell) return;
   const it=cell.querySelector('.item');
   if(it){ it.setAttribute('data-item',c.id); it.innerHTML=potIconHTML(c); }
+  if(ALL[c.id]&&ALL[c.id].pot) cell.style.setProperty('--juice',c.juice||'#4f7a4a');
   const ring=cell.querySelector('.ring');
   if(ring) ring.innerHTML=ringCircles(c);
   else cell.insertAdjacentHTML('beforeend',potRing(c));
@@ -1388,6 +1420,7 @@ function renderBoard(){
       } else d.innerHTML='<div class="gen" data-gen="'+c.gen+'">'+SV(GENS[c.gen].icon)+'</div>';
     } else if(c.t==='item'){
       d.innerHTML='<div class="slot" style="transform:rotate('+tilt(i)+'deg)"><div class="item" data-item="'+c.id+'">'+potIconHTML(c)+'</div></div>'+potRing(c);
+      if(ALL[c.id]&&ALL[c.id].pot&&c.juice) d.style.setProperty('--juice',c.juice);
     } else if(c.t==='crate'){
       d.classList.add('locked');
       d.innerHTML='<div class="obs">'+SV(OBS.crate)+'</div>'+(adjacentOpen(i)?costTag(i):'');
@@ -1516,6 +1549,7 @@ function potAction(dragId,potIdx){
   const it=ALL[dragId];
   if(!it) return null;
   if(dragId==='草木灰') return 'wash';
+  if(it.chain==='brew2') return 'toptea';
   if(it.chain==='raw') return 'burn';
   if(it.chain==='tea') return potTier(c.id)>=3 ? 'steep' : 'water';
   return null;
@@ -1564,10 +1598,11 @@ function doRub(i){
   if(state.tut&&state.tut.got){ state.tut.got.rub=1; renderMascot(); }   // 教程气泡当场跟进
   const slow=(c.tare||0)>=40;
   const eff=slow?15:25;
-  const bonus=(c.teaS==='mq')?2:((c.teaS==='yq')?1:0);
+  const bonus=c.juiceTop?4:((c.teaS==='mq')?2:((c.teaS==='yq')?1:0));
   const gain=eff+bonus;
   c.patina=Math.min(100,(c.patina||0)+gain);
   c.aged=(c.aged||0)+gain;
+  c.juiceN=(c.juiceN||0)+1;
   c.tare=Math.min(100,(c.tare||0)+16);
   if(Date.now()-lastRubFloat>320){ lastRubFloat=Date.now(); floatText(i,'抹茶汁 +'+gain); }
   if(slow) toast('茶垢太厚，抹得慢了 — 先用草木灰擦一遍');
@@ -1595,9 +1630,10 @@ function waterPot(i,teaIdv){
   const q=t.season==='mq'?2:(t.season==='yq'?1:0);
   const add=4+q;
   c.charges=(c.charges||0)+add;
-  if(state.tut&&state.tut.got) state.tut.got.potWater=1;
   c.teaO=t.origin||null;
   c.teaS=t.season||null;
+  c.juice=juiceColor(t);
+  if(state.tut&&state.tut.got) state.tut.got.potWater=1;
   floatText(i,'灌水 +'+add+' 次');
   toast('灌入'+t.name+'，可抹 '+add+' 次');
   sfx('gurgle');
@@ -1620,9 +1656,11 @@ function drawTrail(){
   const pts=care.pts;
   if(pts.length<2){ $('#trail').innerHTML=''; return; }
   const d=pts.map((p,i)=>(i?'L':'M')+p.x+' '+p.y).join(' ');
-  $('#trail').innerHTML='<path d="'+d+'" fill="none" stroke="'+hsl(96,34,38)+'" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/>'+
-                      '<path d="'+d+'" fill="none" stroke="'+hsl(88,52,64)+'" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>'+
-                      '<path d="'+d+'" fill="none" stroke="'+hsl(72,70,86)+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>';
+  const pot=care?state.cells[care.idx]:null;
+  const jc=(pot&&pot.juice)?pot.juice:'#e8c46a';
+  $('#trail').innerHTML='<path d="'+d+'" fill="none" stroke="'+jc+'" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity=".40"/>'+
+                      '<path d="'+d+'" fill="none" stroke="'+jc+'" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".78"/>'+
+                      '<path d="'+d+'" fill="none" stroke="#fff6dc" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity=".65"/>';
 }
 
 /* ---------------- 障碍 ---------------- */
@@ -2260,6 +2298,14 @@ function onPointerUp(e){
     const A=state.cells[d.payload.idx], B=state.cells[ti];
     if(B.t==='item'){
       const act=potAction(A.id,ti);
+      if(act==='toptea'){
+        // 以顶级香茗养护：只借用，不消耗（它还要交给书生和老掌柜）
+        const c=state.cells[ti];
+        c.juice=juiceColor(ALL[A.id]); c.juiceTop=1; c.juiceN=Math.max(c.juiceN||0,2);
+        floatText(ti,'顶级茶香');
+        toast('以顶级香茗养护：抹出来是金色的，包浆涨得最快（顶级香茗不消耗，交单还够用）');
+        sfx('gurgle'); render(); save(); return;
+      }
       if(act==='water'){                       // 茶汤 → 普通铁壶 = 灌水
         state.cells[d.payload.idx]={t:'empty'};
         waterPot(ti,A.id); return;
